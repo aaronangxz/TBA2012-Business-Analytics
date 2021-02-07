@@ -1,0 +1,290 @@
+---
+title: "Tutorial 3"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## Introduction to R Markdown
+
+R Markdown, is an extremely useful tool that professional data scientists and business analysts use in their day-to-day work.
+
+You can open R Markdown documents in RStudio as well. You should see a little command called "Knit", which allows you to "knit" the entire R Markdown file into a HTML document, or a PDF document, or a MS Word Document (note, for MS Word, you'll need MS Word installed on your system; for PDF, you need to have Tex/Latex distribution installed).
+
+R Markdown is nice to use simply because it allows you to embed both code and write-up into the same document, and it produces presentable output, so you can use it to generate reports from your homework, as well as for your projects in a company.
+
+Here's how you embed a "chunk" of R code.
+
+```{r example-chunk, echo=TRUE}
+1+1
+```
+
+After the three apostrophes, you'll need `r`, then you can give the chunk a name. Please note that **CHUNK NAMES HAVE TO BE A SINGLE-WORD, NO SPACE ALLOWED**. Also, names have to be unique, that is, every chunk needs a **different** name (this has led to rendering failures in previous final exams). You can give chunks names like:
+
+- `chunk1`
+- `read-in-data`
+- `run-regression`
+
+or, what will help you with homework:
+
+- `load-library`
+- `q1.(a)` etc
+
+These names are for you to help organize your code. (In practice it will be very useful when you have files with thousands of lines of code...). After the name of the chunk, you can give it certain options, separated by commas. An important option to highlight : 
+
+- `echo=TRUE` means the code chunk will be copied into the output file. For assignment purposes, **ALWAYS** set `echo=TRUE` so you/we know what code you wrote. If you are working for a company and want to produce nice looking reports, feel free to set it to FALSE.
+
+
+There is a lot to syntax to learn using the R Markdown, but you don't need to be an expert in R Markdown for this module (although we do expect basic proficiency in R!). Hopefully, you can copy all the R Markdown syntax you need from the templates we provide. 
+
+
+Note about *working directories* in R Markdown. If you do not specify your working directory via `setwd('...')`, and you hit `Knit`, the document will assume that the working directory is the directory that the `.rmd` file is in. Thus, if your rmd is in `XYZ/folder1/code.rmd` and your dataset is `XYZ/folder1/data.csv`, then you can simply run `d0 <- read.csv('data.csv')` without running `setwd()`.
+
+
+## Submission Instructions
+
+- Select `output: html_document`.
+- We only require `html` format for assignments/exam. You may want to play with PDF file using pdf_document for your own benefit. 
+- Include all code chunks, so include `echo=TRUE` in all chunks. 
+- Replace the placeholder text, "Type your answer here.", with the answer of your own (This is usually the descriptive and explanation part of your answer).
+- Remember to include any `library('package_name')` statements that you'll need to run your code and future reproduction.
+- You are not required to submit your tutorial assignment outputs. However during the final exam, you will be required to submit both the .rmd and .html files.
+- Rename your R Markdown file `T[X]_[MatricNumber].rmd`, and the output will automatically be `T[X]_[MatricNumber].html`. 
+    - for example, `T3_12345.html`
+    - X is the Tutorial number at the top of this file. For example, this file is for "T3". For tutorials, you can use the following naming conventions or any that is more intuitive to you. 
+
+- **It is important to be able to code and produce your Rmarkdown output file *independently*.** You are responsible for de-bugging and programming in the exam.
+
+## Preparation
+
+## Tutorial 3
+
+```{r load-libraries, echo=TRUE}
+# intall required packages if you have not (suggested packages: dplyr, tidyr, rpivotTable, knitr)
+install.packages("dplyr")
+#only need to run this code once to install the package
+# load required packages 
+library("dplyr")
+
+```
+
+### Tutorial 3 Question 1
+
+- Dataset required: `Bank Credit Risk Data.xlsx`
+
+The worksheet Base Data in the Excel file Bank Credit Risk Data provides information about 425 bank customers who had applied for loans. Each of the column is defined as follows: 
+
+- `Loan Purpose` : Type of purpose for the loan applied
+- `Checking` : Checking account balance
+- `Savings` :  Savings account balance
+- `Months Customer`: Number of months has been a customer of the bank
+- `Months Employed`: Number of months in employment
+- `Gender`: Gender
+- `Marital Status`: Marital status 
+- `Age`: Age in years
+- `Housing`: Housing type
+- `Years`: Number of years at current residence
+- `Job`: Job type
+- `Credit Risk`: Credit-risk classification by the bank
+
+```{r q1-read-dataset, echo=TRUE}
+#put in your working directory folder pathname 
+setwd("/Users/xuanze/Dropbox/00 NUS/TBA2012/Tutorial/Tutorial03")
+#import data file into RStudio
+install.packages("xlsx")
+library("xlsx")
+Q1_data <- read.xlsx("/Users/xuanze/Dropbox/00 NUS/TBA2012/Tutorial/Tutorial03/Bank Credit Risk Data.xlsx",1,rowIndex = 3:428)
+head(Q1_data)
+```
+<p>
+**You will continue to build on the dashboards that we have started in lecture 3.**
+</p>
+
+### Q1.(a) Customer Profile Dashboard 
+- i. The credit risk analysts are now interested in the following Customer demographics: `Housing`, `Job`, `Credit Risk`, `Months Employed` and `Total`. `Total` is the sum of `Checking` and `Savings`. Create this variable `Total` in the dataframe.  
+- ii. Generate a chart and table to view the distributions of each of the above customer demographics variables.
+- iii. Generate the appropriate charts to display the relationship between `Total` and `Months Employed` as well as `Total` and `Age`
+- iv. Describe in your answer below your observations from the charts. 
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+```{r q1.(a), echo=TRUE}
+##Enter your codes here
+Total <- sum(Q1_data$Checking,Q1_data$Savings)
+print(Total)
+
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+### Q1.(b) Customer Credit Risk Analyses Dashboard
+- i. The credit risk analysts are interested in understanding the demographics of customers with different levels of Credit Risk. They would like to be able to see the appropriate charts and tables to compare `Credit Risk` with `Job` as well as `Credit Risk` with `Housing`. They think a stacked barplot might provide a good visualization. Could you develop this dashboard for them? 
+- ii. Describe in your answer below your observations from the charts.
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+```{r q1.(b), echo=TRUE}
+##Enter your codes here
+
+
+
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+### Q1.(c) Customer Loan Analyses Dashboard
+- i. The credit risk analysts are interested in understanding the `Loan Purpose` of customers with "High" levels of `Credit Risk`. Could you generate the table and chart for them to visualize the distribution of `Loan Purpose` for "High" `Credit Risk` customers?
+- ii. Describe in your answer below: Which `Loan Purpose` types are most and least common amongst "High" `Credit Risk` customers? 
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+```{r q1.(c), echo=TRUE}
+##Enter your codes here
+
+
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+### Q1.(d) Customer Account Balance Pareto Analyses
+- i. The credit risk analyses would like to conduct pareto analyses on `Total` to understand if there is a small proportion of customers that contribute to significant amount of total account balances with the bank. Could you help to generate the analyses? 
+- ii. Describe in your answer below, the findings from your pareto analyses. 
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+```{r q1.(d), echo=TRUE}
+##Enter your codes here
+
+
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+### Tutorial 3 Question 2 (Marks allocation is provided to give you an idea of the format in final exam)
+
+- Dataset required: `Purchase Orders.xlsx`
+
+The `Purchase Orders.xlsx` data set contains data on all items that an aircraft component manufacturing company has purchased over the past 3 months. Each of the column is defined as follows: 
+
+- `Supplier` : Supplier of items purchased 
+- `Order No.` : Order Number of the items purchased 
+- `Item No.` :  A categorical variable used to identify the item
+- `Item Description`: Description of the item purhcased 
+- `Item Cost` : Item unit cost
+- `Quantity` : Number of items bought in the purchase order
+- `Cost per order` : Total cost of the order 
+- `A/P Terms (Months)` : Suppliers' Accounts Payable (A/P) terms
+- `Order Date` : Items order date
+- `Arrival Date` : Items arrival date
+
+
+```{r q2-read-dataset, echo=TRUE}
+#put in your working directory folder pathname ()
+
+#import excel file into RStudio
+
+
+```
+<p>
+**Now you will try to build some dashboards on a new dataset.**
+</p>
+
+### Q2.(a) Purchase Order Dashboard 
+The manager would like to understand more about the items purchased in the last 3 months. More specifically, he is interested in the following purchase order information: `Supplier`, `Item Description`, `Cost per order`, `Arrival Time`
+
+- i. `Arrival Time` is the difference between `Arrival Date` and `Order Date`. Create this variable in the dataframe. (1 mark) 
+- ii. Generate the charts and tables to view the frequency distributions of the 4 variables of interest to the manager. (4 marks: 0.5 marks per table/chart)
+- iii. Generate the appropriate chart to display the relationship between `Cost per order` and `Arrival Time`. (1 mark)
+- iv. Describe in your answer below your observations from each of the charts. (2.5 marks)
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+```{r 2a-order, echo=TRUE}
+
+##Enter your codes here
+
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+### Q2.(b) Supplier Analyses Dashboard 
+The manager would like to have a deeper analyses of `Supplier`. He particular, what are the distributions of `Arrival Time` for each of the `Supplier`. And what are the A/P terms offered by each Supplier. 
+
+- i. Display the distribution of `Arrival Time` in a chart for each Supplier. Differentiate each chart by including the supplier name in the chart title. The manager would like the charts to be in blue and you may use different shades of blue for each chart.  (2.5 marks) 
+- ii. From the charts, which supplier tends to ship the fastest and which tends to take the longest? Describe your answer below (1 mark)
+- iii. Create a table to compare the number of orders for each of the A/P Terms each supplier has. Describe your observation in your answer. (2 marks)
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+```{r 2b-order, echo=TRUE}
+
+##Enter your codes here
+
+```
+
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+### Q2.(c) Orders across Months Dashboard 
+- i. The manager wanted to analyze the frequency of orders from each supplier for each of the 4 months. Create a new variable `Month` where `Month` will be the month of `Order Date`. (1 mark)
+- ii. Create the appropriate chart and table for the manager to be able to visually compare the frequency of orders from each supplier across the 4 months. (2 marks)
+
+
+```{r 2c-order, echo=TRUE}
+
+##Enter your codes here
+
+
+```
+
+
+
+
+### Q2.(d) Cost Per Order Pareto Analyses
+- i. The manager would like to conduct pareto analyses on `Cost per order` to understand if there is a small proportion of orders that contribute to significant amount of total cost per order. Could you help to generate the analyses? (2 marks)
+- ii. Describe in your answer below, the findings from your pareto analyses. (1 mark)
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+```{r 2d-order, echo=TRUE}
+
+##Enter your codes here
+
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
