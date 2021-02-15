@@ -121,15 +121,18 @@ View(BD)
 
 ```{r q1.(a), echo=TRUE}
 ##Enter your codes here
-#(i)
+
+#(i)---------------------------------------------------------------------
 #Number of dimension
 dim(BD)
 BD$Total <- BD$Checking + BD$Savings
 dim(BD)
 #Or use mutate
-#BD2 <- BD %>% mutate(Total2 = Checking + Savings)
+#BD2 <- BD %>% mutate(Total = Checking + Savings)
 
-#(ii)
+#(ii)--------------------------------------------------------------------
+#HOUSING (Categorical; can use pie chart / bar plot)
+
 #Get counts
 HouseFreq <- BD%>%count(Housing)
 #Bare bone piechart
@@ -139,21 +142,90 @@ kable(HouseFreq, caption = "Frequency of Bank customers by housing)")
 #Get counts in vector form
 slice.house <- HouseFreq
 #Compute percentage
-house.piepercent <- 100 * round(HouseFreq$n / sum(HouseFreq,2))
+house.piepercent <- 100 * round(HouseFreq$n / sum(HouseFreq$n,2))
 #Extract housing labels
 label <- HouseFreq$Housing
 label <- paste(label,",",sep="") #Default of sep is ""
 label <- paste(label,house.piepercent)
 label<-paste(label,"%",sep="")
+
+#Or in another way:
+#label <- HouseFreq$Housing %>%
+#  paste(",",sep="") %>%
+#  paste(house.piepercent) %>%
+#  paste("%",sep="")
+#label
+
+#Or using glue
+#label <- glue::glue("{HouseFreq$Housing}",{house.piepercent}%")
+#label
+
+#Build Piechart
 pie(slice.house,
     labels = label,
     col = c("blue","cyan","dodgerblue"),
     radius = 1,
-    )
+    main = "Customer Housing Type")
+  
+#JOB (Categorical; can use pie chart / bar plot)
+JobFreq <- BD%>%count(Job)
+kable(JobFreq, caption = "Frequency of Bank customers by Job")
+slice.job <- JobFreq$n
+job.piepercent <- 100 * round(JobFreq$n / sum(JobFreq$n,2))
+label <- JobFreq$Job
+label <- paste(label,",",sep="")
+label <- paste(label,job.piepercent)
+label<-paste(label,"%",sep="")
+pie(slice.job,
+    labels = label,
+    col = c("blue","cyan","dodgerblue","deepskyblue"),
+    radius = 1,
+    main = "Customer Job")
 
-#(iii)
+#Credit Risk (Categorical; can use pie chart / bar plot)
+JobFreq <- BD%>%count(`Credit Risk`)
+kable(cFreq, caption = "Frequency of Bank customers by Credit Risk")
+slice.cr <- crFreq$n
+cr.piepercent <- 100 * round(crFreq$n / sum(crFreq$n,2))
+label <- crFreq$`Credit Risk`
+label <- paste(label,",",sep="")
+label <- paste(label,cr.piepercent)
+label<-paste(label,"%",sep="")
+pie(slice.cr,
+    labels = label,
+    col = c("blue","cyan"),
+    radius = 1,
+    main = "Customer Credit Risk")
+
+#Months (Continuous; use histogram)
+h.em <- hist(BD$`Months Employed`,
+             main = "Histogram of Customer Months Employed",
+             xlab = "Customer Months Employed",
+             ylab = "No. of Customers",
+             col = c("darkorange"),
+             ylim = c(0,160),
+             labels = TRUE)
+
+#Total Account Balance (Continuous; use histogram)
+h.tot <- hist(BD$Total,
+             main = "Histogram of Customer Total Account Balance",
+             xlab = "Total Account Balance",
+             ylab = "No. of Customers",
+             col = c("darkorange"),
+             ylim = c(0,400),
+             labels = TRUE)
+
+#(iii)------------------------------------------------
 #Scatter plot
-plot(BD$Total,BD$`Months Employed`, main = "Scatterplot of Months employed to Total",ylab = "MonthsEmployed",xlab = "Total")
+plot(BD$Total,BD$Age, 
+     main = "Scatterplot of Age to Total",
+     ylab = "Age",
+     xlab = "Total")
+
+plot(BD$Total,BD$`Months Employed`, 
+     main = "Scatterplot of Months employed to Total",
+     ylab = "MonthsEmployed",
+     xlab = "Total")
 
 ```
 
