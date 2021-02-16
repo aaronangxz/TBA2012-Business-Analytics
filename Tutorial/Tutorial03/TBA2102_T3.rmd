@@ -345,6 +345,54 @@ The manager would like to understand more about the items purchased in the last 
 ```{r 2a-order, echo=TRUE}
 
 ##Enter your codes here
+library("dplyr")
+library("tidyr")
+library("rpivotTable")
+library("knitr")
+#library("psych")
+library("readxl")
+
+#Import
+PO <- read_excel("Purchase Orders.xlsx")
+
+#View
+glimpse(PO)
+
+SuppFq <- PO %>%
+  count(Supplier)
+jable(SuppFq,caption = "Frequency Distribution for supplier")
+
+#Horizontal
+#default is (5,<4>,4,2), adding a bigger left margin for the barchart
+#Use bar chart because it is categorical. Using pie chart will be too messy.
+par(mar=c(5,10,4,2))
+barplot(Suppbar,names.arg = SuppFq$Supplier,
+        col = "blue", main = "Frequency of Supplier",
+        cex.names = 0.8,
+        xlab  = "No of orders",
+        xlim = c(0,16),
+        horiz = TRUE,
+        las = 1)
+
+IdFq <- PO %>%
+  count(`Item Description`)
+
+#Cost per Order
+#Extract frequency table from hist()
+cost.Group <- cut(PO$`Cost per order`,h3$breaks)
+t3 <- table(cost.Group)
+kable(t3,caption = "Frequency distribution")
+
+#Arrival Time
+#Create histogram
+h4 <- hist()
+
+
+plot(PO$`Cost per order`,
+     PO$`Arrival Time`,
+     main = "Scatterplot of Arrival Time to Cost per order",
+     xlab = "Cost per order",
+     ylab = "Arrival Time")
 
 ```
 

@@ -1,0 +1,294 @@
+---
+title: "TBA2102-Tutorial 4"
+output: html_document
+---
+
+## Introduction to R Markdown
+
+R Markdown, is an extremely useful tool that professional data scientists and business analysts use in their day-to-day work.
+
+You can open R Markdown documents in RStudio as well. You should see a little command called "Knit", which allows you to "knit" the entire R Markdown file into a HTML document, or a PDF document, or a MS Word Document (note, for MS Word, you'll need MS Word installed on your system; for PDF, you need to have Tex/Latex distribution installed).
+
+R Markdown is nice to use simply because it allows you to embed both code and write-up into the same document, and it produces presentable output, so you can use it to generate reports from your homework, as well as for your projects in a company.
+
+Here's how you embed a "chunk" of R code.
+
+```{r example-chunk, echo=TRUE}
+1+1
+```
+
+After the three apostrophes, you'll need `r`, then you can give the chunk a name. Please note that **CHUNK NAMES HAVE TO BE A SINGLE-WORD, NO SPACE ALLOWED**. Also, names have to be unique, that is, every chunk needs a **different** name (this has led to rendering failures in previous final exams). You can give chunks names like:
+
+- `chunk1`
+- `read-in-data`
+- `run-regression`
+
+or, what will help you with homework:
+
+- `load-library`
+- `q1.(a)` etc
+
+These names are for you to help organize your code. (In practice it will be very useful when you have files with thousands of lines of code...). After the name of the chunk, you can give it certain options, separated by commas. An important option to highlight : 
+
+- `echo=TRUE` means the code chunk will be copied into the output file. For assignment purposes, **ALWAYS** set `echo=TRUE` so you/we know what code you wrote. If you are working for a company and want to produce nice looking reports, feel free to set it to FALSE.
+
+
+There is a lot to syntax to learn using the R Markdown, but you don't need to be an expert in R Markdown for this module (although we do expect basic proficiency in R!). Hopefully, you can copy all the R Markdown syntax you need from the templates we provide. 
+
+
+Note about *working directories* in R Markdown. If you do not specify your working directory via `setwd('...')`, and you hit `Knit`, the document will assume that the working directory is the directory that the `.rmd` file is in. Thus, if your rmd is in `XYZ/folder1/code.rmd` and your dataset is `XYZ/folder1/data.csv`, then you can simply run `d0 <- read.csv('data.csv')` without running `setwd()`.
+
+
+## Submission Instructions
+
+- Select `output: html_document`.
+- We only require `html` format for assignments/exam. You may want to play with PDF file using pdf_document for your own benefit. 
+- Include all code chunks, so include `echo=TRUE` in all chunks. 
+- Replace the placeholder text, "Type your answer here.", with the answer of your own (This is usually the descriptive and explanation part of your answer).
+- Remember to include any `library('package_name')` statements that you'll need to run your code and future reproduction.
+- You are not required to submit your tutorial assignment outputs. However during the final exam, you will be required to submit both the .rmd and .html files.
+- Rename your R Markdown file `T[X]_[MatricNumber].rmd`, and the output will automatically be `T[X]_[MatricNumber].html`. 
+    - for example, `T4_12345.html`
+    - X is the Tutorial number at the top of this file. For example, this file is for "T4". For tutorials, you can use the following naming conventions or any that is more intuitive to you. 
+
+- **It is important to be able to code and produce your Rmarkdown output file *independently*.** You are responsible for de-bugging and programming in the exam.
+
+## Preparation
+
+## Tutorial 4
+
+```{r load-libraries, message=FALSE, warning=FALSE,echo=TRUE}
+# install required packages if you have not (suggested packages: dplyr, tidyr, rpivotTable, knitr, psych)
+# install.packages("dplyr") #only need to run this code once to install the package
+# load required packages 
+# library("xxxx") 
+
+```
+
+
+## Tutorial 4 Question 1 
+
+- Dataset required: `Sales Transactions.xlsx`
+
+`Sales Transactions.xlsx` contains the records of all sale transactions for a day, July 14. Each of the column is defined as follows:
+
+- `CustID` :  Unique identifier for a customer
+- `Region`: Region  of customer's home address 
+- `Payment`: Mode of payment used for the sales transaction
+- `Transction Code`: Numerical code for the sales transaction
+- `Source`: Source of the sales (whether it is through the Web or email)
+- `Amount`: Sales amount
+- `Product`: Product bought by customer
+- `Time Of Day`: time in which the sale transaction took place. 
+
+
+```{r q1-read-dataset, echo=TRUE}
+#put in your working directory folder pathname ()
+
+#import excel file into RStudio
+
+```
+
+<p>
+**As the business analytics analyst of the company, you have been tasked to conduct some descriptive analytics on the dataset, to identify and understand any interesting patterns from the sales transaction data, and to develop dashboards to make visualization of these patterns better. **
+</p>
+
+
+### Q1.(a) Customer Dashboard 
+The manager would like to have a better understanding of the customer profiles. He would like the customer dashboard to be able to display the following:
+
+- i. frequency distribution for the regions the customers are from
+- ii. frequency distribution for the payment mode used by the customers
+
+Write your observations from the table and charts you have generated. 
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+```{r 1a-sale, echo=TRUE}
+##Enter your codes here
+
+
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+### Q1.(b) Sales Transaction Analyses Dashboard 
+The manager would also like to have a dashboard to be able to visualize the sales `Amount` data better. 
+
+- i. First, generate the descriptive statistis for `Amount` in a table. The manager would like to include only these statistics: n (or number of observations), mean, sd, median, skew, kurtosis. 
+- ii. From the results in (i), do you think `Amount` is normally distributed? Plot the histogram and conduct the appropriate goodness of fit test to confirm.
+- iii. The manager is concerned about potential outliers in the data. Can you help to identify if any outliers for `Amount` exists? 
+- iv. The manager suspects that the sales `Amount` may differ for transactions involving `Book` versus `DVD`. Could you generate the table and chart for him to be able to compare the mean and standard deviations of `Amount` for books verus dvds? Describe what you can observe from the chart. 
+- v. Perform the outlier analyses separately for books and dvds. What observations can you make now? Would you remove any of the outliers? 
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+```{r 1b-sale, echo=TRUE}
+##Enter your codes here
+
+
+
+```
+
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+### Q1.(c) Computing probabilities 
+The manager would like to use the existing data to compute the probability of the following events: 
+- i. `Amount` for sales transaction of `Book` is greater than $60.
+- ii. the sales transaction of `DVD` will come from the Web.
+Please compute the probabilities and type your answer below.
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+```{r 1c-sale, echo=TRUE}
+##Enter your codes here
+
+
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+## Tutorial 4 Question 2 (Marks allocation for your information only - 20 marks)
+
+- Dataset required: `Purchase Orders.xlsx`
+
+The `Purchase Orders.xlsx` data set contains data on all items that an aircraft component manufacturing company has purchased over the past 4 months. Each of the column is defined as follows: 
+
+- `Supplier` : Supplier of items purchased 
+- `Order No.` : Order Number of the items purchased 
+- `Item No.` :  A categorical variable used to identify the item
+- `Item Description`: Description of the item purhcased 
+- `Item Cost` : Item unit cost
+- `Quantity` : Number of items bought in the purchase order
+- `Cost per order` : Total cost of the order 
+- `A/P Terms (Months)` : Suppliers' Accounts Payable (A/P) terms
+- `Order Date` : Items order date
+- `Arrival Date` : Items arrival date
+
+
+```{r q2-read-dataset, echo=TRUE}
+#put in your working directory folder pathname ()
+
+#import excel file into RStudio
+
+```
+<p>
+**Now let's build on the dashboards from Tutorial 3.**
+</p>
+
+### Q2.(a) Purchase Order Dashboard 
+Last tutorial, you were told the manager would like to understand more about the items purchased in the last 4 months. More specifically, he is interested in the following purchase order information: `Supplier`, `Item Description`, `Cost per order`, `Arrival Time` and `Arrival Time` is the difference between `Arrival Date` and `Order Date`. 
+
+- i. Now that we have learnt how to identify outliers, let's explore to see if there are any outliers for `Arrival Time`. Plot the boxplot with range at 1.5 and 3 to help you with the identification. For each boxplot, how many outliers do you detect? Extract the outlier record(s) (i.e. row in the dataframe) for range=1.5 and range=3 to dataframes `outlier1.5` and `outlier3` respectively. [3 marks]
+- ii. Generate the descriptive statistics for `Arrival Time` and `Cost per order` in a table. Note that despite the outliers detected in (i), the manager would like to keep all the data. In addition, he expressed that he is only interested in the following descriptive statistics so only have these displayed in the table: n (or number of observations), mean, sd, median, min, max, skew, kurtosis. [2 marks]
+- iii. What can you conclude about the shape of the distribution for the two variables from the coefficient of skewness and coefficient of kurtosis? [1 mark]
+- iv. The manager would like to assess if `Cost per order` and `Arrival Time` are linearly related. He also would like to assess the same for `Quantity`and `Arrival Time`. Compute and display the statistical measure for the manager. From the results, what can you conclude? [2 marks]
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+```{r 2a-order, echo=TRUE}
+##Enter your codes here
+
+
+
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+### Q2.(b) Supplier Analyses Dashboard 
+Recall the manager would like to have a deeper analyses of `Supplier`. He would like to compare the mean and standard deviation of `Arrival Time` for each of the `Supplier`. 
+
+- i. Generate the table and chart that will allow the manager to be able to compare the means and standard deviations of `Arrival Time` for each `Supplier`. (Note: There is limited screen space so the manager would like just one table and one chart for this.) [4 marks]
+- ii. From the chart, describe your conclusion on the suppliers with the highest and lowest mean and variance in `Arrival Time`. [1 mark]  
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+```{r 2b-order, echo=TRUE}
+##Enter your codes here
+
+
+```
+
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+### Q2.(c) Monthly Purchasing Cost Trend Dashboard
+The manager wants to gain more insights into the trends of purchasing costs across the 4 months of data. 
+
+- i. There are a total of 13 different item types (defined by `Item Description`) that the company has purchased. The manager would like to have a dashboard to visualize the trend of monthly purchasing cost spent on each of the 13 items over the 4-month period. Using the `Order Date` to compute the month of purchase, generate an appropriate table and chart for the manager to view the trends. [4 marks]  
+- ii. From the chart, describe two trends you observe. [1 mark]
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+```{r 2c-order, echo=TRUE}
+
+##Enter your codes here
+
+
+```
+<p style="color:blue">
+Type your answer here.
+</p>
+
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+
+### Q2.(d) Computing Probabilities
+The manager would like to use the existing data to compute the probability of the following events: 
+
+- i. `Arrival Time` for an order with `Alum Sheeting` being less than 7 days [1 mark]
+- ii. Cost of an order of `O-Ring` being more than $12000. [1 mark]
+
+Please compute the probabilities and type your answer below.
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+```{r 2d-order, echo=TRUE}
+## Enter your codes here
+
+
+  
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+
+
+
+
+
+
+
