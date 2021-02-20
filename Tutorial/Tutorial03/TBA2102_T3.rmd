@@ -242,22 +242,65 @@ Type your answer here.
 <p style="color:red">**BEGIN: YOUR ANSWER**</p>
 
 ```{r q1.(b), echo=TRUE}
-##Enter your codes here
-#Create contingency table for Credit Risk abd job with Job as columns and credit risk as rows
-BDb1 <- BD %>% group_by(`Credit Risk`,Job) %>% tally()
+##CREDIT RISK & JOB-----------------------------------
+#Create contingency table for Credit Risk and job with Job as columns and credit risk as rows
+BDb1 <- BD %>% 
+  group_by(`Credit Risk`,Job) %>% 
+  tally()
 #Change from long to wide form
-BDb1.spread <- BDb1 %>% spread(key = Job,value = n)
+BDb1.spread <- BDb1 %>% 
+  spread(key = `Job`,value = n)
 
 kable(BDb1.spread,caption = "Contingency table for credit risk and job")
 
 #Plot the grouped stack barplot
 #First extract and convert the 2nd to 5th column into a matrix
+
+#Stacked barplot
 barmatrix.BDb1 <- as.matrix(BDb1.spread[,c(2,5)])
 bar_Col1 <- c("blue","gray")
-barplot(barmatrix.BDb1,col = bar_Col1,main = "Credit Risk and Job")
-legend ("topright",cex = 0.6)
+barplot(barmatrix.BDb1,
+        col = bar_Col1,
+        main = "Credit Risk and Job")
+legend ("topright",
+        cex = 0.6,
+        fill = bar_Col1,
+        BDb1.spread$`Credit Risk`)
 
+#Side by side
+#barmatrix.BDb1 <- as.matrix(BDb1.spread[,c(2,5)])
+#bar_Col1 <- c("blue","gray")
+#barplot(barmatrix.BDb1,
+#        col = bar_Col1,
+#        main = "Credit Risk and Job")
+#legend ("topright",
+#        cex = 0.6,
+#        fill = bar_Col1,
+#        BDb1.spread$`Credit Risk`)
 
+##CREDIT RISK & HOUSING -------------------------------
+#1
+BDb2 <- BD %>%
+  group_by(`Credit Risk`,Housing) %>%
+  Count()
+
+#2
+#Long data format, hence use spread() to convert into wide data format
+BDb2.spread <- BDbs %>%
+  spread(key = `Housing`,value = n)
+
+#3
+kable(BDb2.spread,caption = "Contingency table for Credit Risk and Housing")
+#Plot the grouped stacked bar plot
+#Extract and convert the 2nd to 4th columns into a matrix
+barmatrix.BDb2 <- as.matrix(BDb2.spread[,c(2,4)])
+barplot(barmatrix.BDb2,
+        col = bar_Col1,
+        main = "Credit Risk and Housing")
+legend("topright",
+       cex=0.6,
+       fill = bar_Col1,
+       BDb2.spread$`Credit Risk`)
 
 ```
 
@@ -275,8 +318,26 @@ Type your answer here.
 
 ```{r q1.(c), echo=TRUE}
 ##Enter your codes here
+#Extract record for High credit risk
+LoanHRFreq <- BD %>%
+  filter(`Credit Risk` == "High") %>%
+  count(`Loan Purpose`)
 
+kable(LoanHRFreq,caption = "Frequency Distribution for Loan Purpose for High CR Customers")
 
+LoanHRbar <- LoanHRFreq$n
+
+#Horizontal
+barplot(LoanHRbar,
+        names.arg = LoanHRFreq$`Loan Purpose`,
+        col = "blue",
+        beside = TRUE,
+        main = "Frequency of Loan Purpose for High CR Customers",
+        cex.names = 0.8,
+        xlim = c(0,80),
+        xlab = "No. of loans",
+        horiz = TRUE,
+        las = 1)
 ```
 
 <p style="color:blue">
@@ -294,7 +355,22 @@ Type your answer here.
 
 ```{r q1.(d), echo=TRUE}
 ##Enter your codes here
+#extract only the Total column and sort in desc order
+BD.tot <- BD %>%
+  select(Total) %>%
+  arrange(desc(Total))
 
+#Compute the percentage of savings over total savings
+BD.tot$Percentage <- BD.tot$Total/sum(BD.tot$Total)
+
+#Compute cumulative percentage for Total
+BD.tot$Cumulative <- cumsum(BD.tot$Percentage)
+
+#Compute cumulative percentage of customers from top most savings
+BD.tot$Cumulative.cust <- as.numeric(rownames(BD)/nrow(BD))
+
+#Compute percentage of customers with top 80% savings
+101/nrow(BD)
 
 ```
 
@@ -415,6 +491,12 @@ The manager would like to have a deeper analyses of `Supplier`. He particular, w
 ```{r 2b-order, echo=TRUE}
 
 ##Enter your codes here
+#Create a histogram, for each supplier
+AS.PO <- PO %>%
+  filter(Supplier == "Alum Sheeting")
+
+hist(AS.PO$Arr)
+
 
 ```
 
