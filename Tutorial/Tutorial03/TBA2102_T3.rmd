@@ -1,8 +1,8 @@
 ---
 title: "Tutorial 3"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ## Introduction to R Markdown
@@ -61,10 +61,10 @@ Note about *working directories* in R Markdown. If you do not specify your worki
 
 ```{r load-libraries, echo=TRUE}
 # intall required packages if you have not (suggested packages: dplyr, tidyr, rpivotTable, knitr)
-install.packages("dplyr")
-install.packages("tidyr")
-install.packages("rpivotTable")
-install.packages("knitr")
+#install.packages("dplyr",repos = "http://cran.us.r-project.org")
+#install.packages("tidyr",repos = "http://cran.us.r-project.org")
+#install.packages("rpivotTable",repos = "http://cran.us.r-project.org")
+#install.packages("knitr",repos = "http://cran.us.r-project.org")
 
 #only need to run this code once to install the package
 # load required packages 
@@ -72,7 +72,6 @@ library("dplyr")
 library("tidyr")
 library("rpivotTable")
 library("knitr")
-
 ```
 
 ### Tutorial 3 Question 1
@@ -96,11 +95,10 @@ The worksheet Base Data in the Excel file Bank Credit Risk Data provides informa
 
 ```{r q1-read-dataset, echo=TRUE}
 #put in your working directory folder pathname 
-#setwd("/Users/xuanze/Dropbox/00 NUS/TBA2012/Tutorial/Tutorial03")
-setwd("E:/Dropbox/00 NUS/TBA2012/Tutorial/Tutorial03")
+setwd("/Users/xuanze/Dropbox/00 NUS/TBA2012/Tutorial/Tutorial03")
+#setwd("E:/Dropbox/00 NUS/TBA2012/Tutorial/Tutorial03")
 
 #import data file into RStudio
-install.packages("readxl")
 library("readxl")
 #Import
 BD <- read_excel("Bank Credit Risk Data.xlsx",sheet = "Base Data",skip = 2)
@@ -140,7 +138,7 @@ pie(HouseFreq$n, labels= c("Other","Own","Rent"))
 #View in table form
 kable(HouseFreq, caption = "Frequency of Bank customers by housing)")
 #Get counts in vector form
-slice.house <- HouseFreq
+slice.house <- HouseFreq$n
 #Compute percentage
 house.piepercent <- 100 * round(HouseFreq$n / sum(HouseFreq$n,2))
 #Extract housing labels
@@ -183,8 +181,8 @@ pie(slice.job,
     main = "Customer Job")
 
 #Credit Risk (Categorical; can use pie chart / bar plot)
-JobFreq <- BD%>%count(`Credit Risk`)
-kable(cFreq, caption = "Frequency of Bank customers by Credit Risk")
+crFreq <- BD%>%count(`Credit Risk`)
+kable(crFreq, caption = "Frequency of Bank customers by Credit Risk")
 slice.cr <- crFreq$n
 cr.piepercent <- 100 * round(crFreq$n / sum(crFreq$n,2))
 label <- crFreq$`Credit Risk`
@@ -282,11 +280,11 @@ legend ("topright",
 #1
 BDb2 <- BD %>%
   group_by(`Credit Risk`,Housing) %>%
-  Count()
+  count()
 
 #2
 #Long data format, hence use spread() to convert into wide data format
-BDb2.spread <- BDbs %>%
+BDb2.spread <- BDb2 %>%
   spread(key = `Housing`,value = n)
 
 #3
@@ -367,7 +365,7 @@ BD.tot$Percentage <- BD.tot$Total/sum(BD.tot$Total)
 BD.tot$Cumulative <- cumsum(BD.tot$Percentage)
 
 #Compute cumulative percentage of customers from top most savings
-BD.tot$Cumulative.cust <- as.numeric(rownames(BD)/nrow(BD))
+BD.tot$Cumulative.cust <- as.numeric(rownames(BD))/nrow(BD)
 
 #Compute percentage of customers with top 80% savings
 101/nrow(BD)
@@ -399,10 +397,28 @@ The `Purchase Orders.xlsx` data set contains data on all items that an aircraft 
 
 
 ```{r q2-read-dataset, echo=TRUE}
-#put in your working directory folder pathname ()
+library("dplyr")
+library("tidyr")
+library("rpivotTable")
+library("knitr")
+library("readxl")
 
 #import excel file into RStudio
+#setwd("E:/Dropbox/00 NUS/TBA2012/Tutorial/Tutorial03")
+setwd("/Users/xuanze/Dropbox/00 NUS/TBA2012/Tutorial/Tutorial03")
 
+#Import
+PO <- read_excel("Purchase Orders.xlsx")
+
+#Inspect
+glimpse(PO)
+
+#Display internal structure
+#str(PO)
+#First 5 entries in table
+#head(PO)
+#Check class of data types of all variables in PO
+#lapply(PO,class)
 
 ```
 <p>
@@ -420,50 +436,70 @@ The manager would like to understand more about the items purchased in the last 
 <p style="color:red">**BEGIN: YOUR ANSWER**</p>
 ```{r 2a-order, echo=TRUE}
 
-##Enter your codes here
-library("dplyr")
-library("tidyr")
-library("rpivotTable")
-library("knitr")
-#library("psych")
-library("readxl")
+#(i) Create `Arrival Time` dataframe
+PO$`Arrival Time` <- as.numeric(PO$`Arrival Date` - PO$`Order Date`)
 
-#Import
-PO <- read_excel("Purchase Orders.xlsx")
-
-#View
-glimpse(PO)
-
+#(ii)
+#Supplier
 SuppFq <- PO %>%
   count(Supplier)
-jable(SuppFq,caption = "Frequency Distribution for supplier")
+kable(SuppFq,caption = "Frequency Distribution for supplier")
+Suppbar <- SuppFq$n
 
-#Horizontal
+#Supplier - Horizontal
 #default is (5,<4>,4,2), adding a bigger left margin for the barchart
 #Use bar chart because it is categorical. Using pie chart will be too messy.
 par(mar=c(5,10,4,2))
-barplot(Suppbar,names.arg = SuppFq$Supplier,
+barplot(Suppbar,
+        names.arg = SuppFq$Supplier,
         col = "blue", main = "Frequency of Supplier",
         cex.names = 0.8,
-        xlab  = "No of orders",
+        xlab  = "No. of orders",
         xlim = c(0,16),
         horiz = TRUE,
         las = 1)
 
+#Item Description
 IdFq <- PO %>%
   count(`Item Description`)
+kable(IdFq,caption = "Frequency Distribution for Item Description")
+Idbar <- IdFq$n
+
+#Item Description - Horizontal
+par(mar=c(5,10,4,2))
+barplot(Idbar,
+        names.arg = IdFq$`Item Description`,
+        col = "blue", main = "Frequency of Item Description",
+        cex.names = 0.8,
+        xlab  = "No. of orders",
+        horiz = TRUE,
+        las = 1)
 
 #Cost per Order
+par(mar=c(5,4,4,2))
+h3<-hist(PO$`Cost per order`,
+         main = "Histogram of Cost Per Order",
+         xlab = "Cost per order",
+         ylab = "No. of orders",
+         col = c("darkorange"),
+         xlim = c(0,140000),
+         ylim = c(0,70),
+         labels = TRUE)
 #Extract frequency table from hist()
 cost.Group <- cut(PO$`Cost per order`,h3$breaks)
 t3 <- table(cost.Group)
-kable(t3,caption = "Frequency distribution")
+kable(t3,caption = "Frequency distribution for cost per order")
 
 #Arrival Time
 #Create histogram
-h4 <- hist()
-
-
+h4 <- hist(PO$`Arrival Time`,
+           main = "Histogram of Arrival Time",
+           xlab="Arrival Time (days)",
+           ylab = "No. of orders",
+           col=c("darkorange"),
+           ylim=c(0,60),
+           labels=TRUE)
+#Scatterplot
 plot(PO$`Cost per order`,
      PO$`Arrival Time`,
      main = "Scatterplot of Arrival Time to Cost per order",
@@ -489,14 +525,93 @@ The manager would like to have a deeper analyses of `Supplier`. He particular, w
 
 <p style="color:red">**BEGIN: YOUR ANSWER**</p>
 ```{r 2b-order, echo=TRUE}
-
-##Enter your codes here
+#(i)
 #Create a histogram, for each supplier
+#ALUM SHEETING
 AS.PO <- PO %>%
   filter(Supplier == "Alum Sheeting")
+hist(AS.PO$`Arrival Time`,
+     main = "Histogram of Arrival Time (Alum Sheeting)",
+     xlab = "Arrival Time (days)",
+     ylab = "No. of Orders",
+     col = c("deepskyblue"))
 
-hist(AS.PO$Arr)
+#DURRABLE PRODUCTS
+DP.PO <- PO %>%
+  filter(Supplier == "Durrable Products")
+hist(DP.PO$`Arrival Time`,
+     main = "Histogram of Arrival Time (Durrable Products)",
+     xlab = "Arrival Time (days)",
+     ylab = "No. of Orders",
+     col = c("deepskyblue1"))
 
+#FAST-TIE AEROSPACE
+FT.PO <- PO %>%
+  filter(Supplier == "Fast-Tie Aerospace")
+hist(FT.PO$`Arrival Time`,
+     main = "Histogram of Arrival Time (Fast-Tie Aerospace)",
+     xlab = "Arrival Time (days)",
+     ylab = "No. of Orders",
+     col = c("deepskyblue2"))
+
+#HULKEY FASTENERS
+HF.PO <- PO %>%
+  filter(Supplier == "Hulkey Fasteners")
+hist(HF.PO$`Arrival Time`,
+     main = "Histogram of Arrival Time (Hulkey Fasteners)",
+     xlab = "Arrival Time (days)",
+     ylab = "No. of Orders",
+     col = c("deepskyblue3"))
+
+#MANLEY VALVE
+MV.PO <- PO %>%
+  filter(Supplier == "Manley Valve")
+hist(MV.PO$`Arrival Time`,
+     main = "Histogram of Arrival Time (Manly Valve)",
+     xlab = "Arrival Time (days)",
+     ylab = "No. of Orders",
+     col = c("dodgerblue"))
+
+#PYLON ACCESSORIES
+PA.PO <- PO %>%
+  filter(Supplier == "Pylon Accessories")
+hist(PA.PO$`Arrival Time`,
+     main = "Histogram of Arrival Time (Pylon Accessories)",
+     xlab = "Arrival Time (days)",
+     ylab = "No. of Orders",
+     col = c("dodgerblue1"))
+
+#SPACETIME TECHNOLOGIES
+ST.PO <- PO %>%
+  filter(Supplier == "Spacetime Technologies")
+hist(PA.PO$`Arrival Time`,
+     main = "Histogram of Arrival Time (Spacetime Technologies)",
+     xlab = "Arrival Time (days)",
+     ylab = "No. of Orders",
+     col = c("dodgerblue2"))
+
+#STEELPIN INC.
+SI.PO <- PO %>%
+  filter(Supplier == "Steelpin Inc.")
+hist(SI.PO$`Arrival Time`,
+     main = "Histogram of Arrival Time (Steelpin Inc.)",
+     xlab = "Arrival Time (days)",
+     ylab = "No. of Orders",
+     col = c("dodgerblue3"))
+
+#(ii)
+# Durrable seems to take the shortest time
+# Spacetime takes longest time
+
+#(iii)
+PO1 <- PO %>%
+  group_by(`Supplier`,`A/P Terms (Months)`) %>%
+  tally()
+PO1.spread <- PO1 %>%
+  spread(key = Supplier,value = n)
+#Convert NA to 0
+PO1.spread[is.na(PO1.spread)] <- 0
+kable(PO1.spread,caption = "Contingency Table for Supplier & A/P Terms")
 
 ```
 
@@ -516,8 +631,31 @@ Type your answer here.
 
 ```{r 2c-order, echo=TRUE}
 
-##Enter your codes here
+PO$Month <- format(as.Date(PO$`Order Date`),"%m")
 
+PO2 <- PO %>%
+  group_by(Supplier,Month) %>%
+  tally()
+PO2.spread <- PO2 %>%
+  spread(key = "Supplier",value = n)
+PO2.spread[is.na(PO2.spread)] <- 0
+kable(PO2.spread,caption = "Contingency Table for supplier & order month")
+
+#plot horizontal grouped barplot
+par(mar=c(2,10,5,2))
+barmatrix.PO2 <- as.matrix(PO2.spread[,c(2,9)])
+barplot(barmatrix.PO2,
+        beside = TRUE,
+        horiz = TRUE,
+        col = c("pink","blue","magenta","cyan"),
+        main = "Suppliers by Months Comparison",
+        xlim = c(0,15),
+        cex.names = 0.8,
+        las = 1)
+legend("topright",
+       cex = 1,
+       fill=c("pink","blue","magenta","cyan"),
+       PO2.spread$Month)
 
 ```
 
@@ -531,8 +669,23 @@ Type your answer here.
 
 <p style="color:red">**BEGIN: YOUR ANSWER**</p>
 ```{r 2d-order, echo=TRUE}
+#Extract savings column and sort in desc
+PO.cost <- PO %>%
+  select(`Cost per order`) %>%
+  arrange(desc(`Cost per order`))
 
-##Enter your codes here
+#Compute percentage of savings over total savings
+PO.cost$Percentage <- PO.cost$`Cost per order`/sum(PO.cost$`Cost per order`)
+
+#Compute cumulative percentage for savings
+PO.cost$Cumulative <- cumsum(PO.cost$Percentage)
+
+#Compute cumulative percentage of customers from top most savings
+PO.cost$Cumulative.cust <- as.numeric(rownames(PO))/nrow(PO)
+
+#Compute percentage of customers with top 80% savings
+37/nrow(PO)
+36/nrow(PO)
 
 ```
 
