@@ -1,0 +1,219 @@
+---
+title: "TBA2102-Tutorial 5"
+output: html_document
+---
+
+## Introduction to R Markdown
+
+R Markdown, is an extremely useful tool that professional data scientists and business analysts use in their day-to-day work.
+
+You can open R Markdown documents in RStudio as well. You should see a little command called "Knit", which allows you to "knit" the entire R Markdown file into a HTML document, or a PDF document, or a MS Word Document (note, for MS Word, you'll need MS Word installed on your system; for PDF, you need to have Tex/Latex distribution installed).
+
+R Markdown is nice to use simply because it allows you to embed both code and write-up into the same document, and it produces presentable output, so you can use it to generate reports from your homework, as well as for your projects in a company.
+
+Here's how you embed a "chunk" of R code.
+
+```{r example-chunk, echo=TRUE}
+1+1
+```
+
+After the three apostrophes, you'll need `r`, then you can give the chunk a name. Please note that **CHUNK NAMES HAVE TO BE A SINGLE-WORD, NO SPACE ALLOWED**. Also, names have to be unique, that is, every chunk needs a **different** name (this has led to rendering failures in previous final exams). You can give chunks names like:
+
+- `chunk1`
+- `read-in-data`
+- `run-regression`
+
+or, what will help you with homework:
+
+- `load-library`
+- `q1.(a)` etc
+
+These names are for you to help organize your code. (In practice it will be very useful when you have files with thousands of lines of code...). After the name of the chunk, you can give it certain options, separated by commas. An important option to highlight : 
+
+- `echo=TRUE` means the code chunk will be copied into the output file. For assignment purposes, **ALWAYS** set `echo=TRUE` so you/we know what code you wrote. If you are working for a company and want to produce nice looking reports, feel free to set it to FALSE.
+
+
+There is a lot to syntax to learn using the R Markdown, but you don't need to be an expert in R Markdown for this module (although we do expect basic proficiency in R!). Hopefully, you can copy all the R Markdown syntax you need from the templates we provide. 
+
+
+Note about *working directories* in R Markdown. If you do not specify your working directory via `setwd('...')`, and you hit `Knit`, the document will assume that the working directory is the directory that the `.rmd` file is in. Thus, if your rmd is in `XYZ/folder1/code.rmd` and your dataset is `XYZ/folder1/data.csv`, then you can simply run `d0 <- read.csv('data.csv')` without running `setwd()`.
+
+
+## Submission Instructions
+
+- Select `output: html_document`.
+- We only require `html` format for assignments/exam. You may want to play with PDF file using pdf_document for your own benefit. 
+- Include all code chunks, so include `echo=TRUE` in all chunks. 
+- Replace the placeholder text, "Type your answer here.", with the answer of your own (This is usually the descriptive and explanation part of your answer).
+- Remember to include any `library('package_name')` statements that you'll need to run your code and future reproduction.
+- You are not required to submit your tutorial assignment outputs. However during the final exam, you will be required to submit both the .rmd and .html files.
+- Rename your R Markdown file `T[X]_[MatricNumber].rmd`, and the output will automatically be `T[X]_[MatricNumber].html`. 
+    - for example, `T5_12345.html`
+    - X is the Tutorial number at the top of this file. For example, this file is for "T5". For tutorials, you can use the following naming conventions or any that is more intuitive to you. 
+
+- **It is important to be able to code and produce your Rmarkdown output file *independently*.** You are responsible for de-bugging and programming in the exam.
+
+## Tutorial 5
+
+```{r load-libraries, echo=TRUE}
+# intall required packages if you have not (suggested packages: rcompanion, rstatix, Rmisc, dplyr, tidyr, rpivotTable, knitr, psych)
+# install.packages("dplyr") #only need to run this code once to install the package
+# load required packages 
+# library("xxxx")
+
+```
+
+
+## Tutorial 5 Question 1 
+### (To be discussed in tutorial 5, 2 Mar)
+- Dataset required: `Sales Transactions.xlsx`
+
+`Sales Transactions.xlsx` contains the records of all sale transactions for a day, July 14. Each of the column is defined as follows:
+
+- `CustID` :  Unique identifier for a customer
+- `Region`: Region  of customer's home address 
+- `Payment`: Mode of payment used for the sales transaction
+- `Transction Code`: Numerical code for the sales transaction
+- `Source`: Source of the sales (whether it is through the Web or email)
+- `Amount`: Sales amount
+- `Product`: Product bought by customer
+- `Time Of Day`: time in which the sale transaction took place. 
+
+
+```{r read-dataset1, echo=TRUE}
+#put in your working directory folder pathname ()
+
+#import data file into RStudio
+
+
+```
+
+<p>
+**In the last tutorial, you have been tasked to conduct some descriptive analytics on the dataset, to identify and understand any interesting patterns from the sales transaction data, and to develop dashboards to make visualization of these patterns better. This week, we will conduct sampling estimation and hypotheses testing with the data.**
+
+**Note for this tutorial to round off your answers to the following: If the answer is greater than 1, round off to 2 decimal places. If the answer is less than 1, round off to 3 significant numbers. When rounding, also take note of the natural rounding points, for example, costs in dollars would round off to 2 decimal places.**
+</p>
+
+
+### Q1.(a) Computing Interval Estimates
+**Using the sale transaction data on July 14,**
+
+- i) compute the 95% confidence interval for the mean of `Amount`. 
+- ii) compute the 99% confidence interval for proportion of book sales transactions with sales amount being greater than $50.
+- iii) compute the 90% predictive interval for `Amount` for orders of DVD.
+
+What do each of the interval estimates above tell us? Type your answer below. Indicate clearly what parameter or value are you estimating and which sample or population the estimates are for. 
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+```{r int.1a, echo=TRUE}
+# Enter your codes here
+
+
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+### Q1.(b) Hypothesis Testing
+**The manager would like to draw some conclusions from the sales transaction data. He does not believe there are outliers in the data so you may leave all the data as is. He would like your help to set up and test the following hypotheses.**
+
+- i) Is the proportion of book sales transactions with `Amount` greater than $50 at least 10 percent of book sales transactions? 
+- ii) Is the mean sales amount for books the same as for dvds? 
+- iii) Is the mean sales amount the same across all 4 regions? 
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+```{r hyp.1b, echo=TRUE}
+
+# Enter your codes here
+
+```
+
+<p style="color:blue">
+
+Type your answer here.
+</p>
+ 
+</p>
+
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+## Tutorial 5 Question 2 
+### (To be discussed in tutorial 6, 9 Mar)
+- Dataset required: `Purchase Orders 2.xlsx`
+
+The `Purchase Orders 2.xlsx` data set contains data on all items that an aircraft component manufacturing company has purchased over the past 4 months. Each of the column is defined as follows: 
+
+- `Supplier` : Supplier of items purchased 
+- `Order No.` : Order Number of the items purchased 
+- `Item No.` :  A categorical variable used to identify the item
+- `Item Description`: Description of the item purhcased 
+- `Item Cost` : Item unit cost
+- `Quantity` : Number of items bought in the purchase order
+- `Cost per order` : Total cost of the order 
+- `A/P Terms (Months)` : Suppliers' Accounts Payable (A/P) terms
+- `Order Date` : Items order date
+- `Arrival Date` : Items arrival date
+- `Arrival Time`: Number of days for order to arrive (Difference between `Order Date` and `Arrival Date`)
+
+```{r read-dataset2, echo=TRUE}
+#put in your working directory folder pathname 
+
+#import data file into RStudio
+
+
+
+```
+<p>
+
+### Q2.(a) Computing Interval Estimates
+**Using this 4-month sample data, assist the manager of this company to:**
+
+- i) compute the 90% confidence interval for the mean of `Cost per order` for orders with A/P Terms of 30 Months. (2 marks)
+- ii) compute the 95% confidence interval for proportion of orders with `Arrival Time` less than 6 days. (2 marks)
+- iii) compute the 99% predictive interval for `Arrival Time` of a new order with A/P Terms of 30 months. (4 marks)
+
+Explain to the manager what each of these interval estimates mean. In your explanation, you must indicate clearly what parameter or value are being estimated and whether the estimates are for the population or sample. (3 marks)
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+```{r int-2a, echo=TRUE}
+# Enter your codes here
+
+``` 
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+### Q2.(b) Hypotheses Testing
+**The manager of the company would like to draw some conclusions from the sample data he has. He too does not wish to remove any outlier data so you may use the datset as is to test the hypotheses below.**
+
+- i) The proportion of orders with `Arrival Time` less than 6 days is greater than 15 percent of all orders. (4 marks)
+- ii) Is the mean `Arrival Time` for order with AP Terms of 30 months different from those with other AP terms? [Hint: Here you can treat orders with A/P Terms of 30 months to be one group where those with A/P Terms of 15, 25 and 45 months to be another group. You can create a new variable, e.g. ap.gp and assign it a value of "1" when `A/P Terms (Months)` is 30; and assign it a value of 2 if `A/P Terms (Months)` is 15, 25 or 45.] (4 marks)
+- iii) Is the mean `Arrival Time` the same across these 3 groups of suppliers. The suppliers are grouped according to the manager's definition: "1" includes `Fast-Tie Aerospace` and `Hulkey Fasteners`; "2" includes `Alum Sheeting`,  `Durrable Products`, and `Manley Valve`; 3 includes `Steelpin Inc.`,`Spacetime Technologies`,`Pylon Accessories`? [Hint: To help you with the hypothesis testing, ou would want to create a new variable `s.gp` (you can use a different name) to group the records by Suppliers first. You would assign the values of "1", "2", "3" to`s.gp` depending on the value of `Suppliers` for the records.] (6 marks)
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+```{r hyp-2b, echo=TRUE}
+
+# Enter your codes here
+
+
+``` 
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
