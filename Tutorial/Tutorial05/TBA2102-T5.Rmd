@@ -107,6 +107,7 @@ What do each of the interval estimates above tell us? Type your answer below. In
 <p style="color:red">**BEGIN: YOUR ANSWER**</p>
 ```{r int.1a, echo=TRUE}
 # Enter your codes here
+#(i)
 
 
 ```
