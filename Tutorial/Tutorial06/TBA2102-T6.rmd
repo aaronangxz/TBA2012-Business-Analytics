@@ -1,0 +1,240 @@
+---
+title: 'Tutorial 6: Linear Regression'
+author: 'REPLACE WITH YOUR NAME and ID#'
+output: html_document
+---
+
+## Introduction to R Markdown
+
+R Markdown, is an extremely useful tool that professional data scientists and business analysts use in their day-to-day work.
+
+You can open R Markdown documents in RStudio as well. You should see a little command called "Knit", which allows you to "knit" the entire R Markdown file into a HTML document, or a PDF document, or a MS Word Document (note, for MS Word, you'll need MS Word installed on your system; for PDF, you need to have Tex/Latex distribution installed).
+
+R Markdown is nice to use simply because it allows you to embed both code and write-up into the same document, and it produces presentable output, so you can use it to generate reports from your homework, and, when you eventually go out to work in a company, for your projects.
+
+Here's how you embed a "chunk" of R code.
+
+```{r example-chunk, echo=TRUE}
+1+1
+```
+
+After the three apostrophes, you'll need `r`, then you can give the chunk a name. Please note that **CHUNK NAMES HAVE TO BE A SINGLE-WORD, NO SPACE ALLOWED**. Also, names have to be unique, that is, every chunk needs a **different** name (this has led to rendering failures in previous final exams). You can give chunks names like:
+
+- `chunk1`
+- `read-in-data`
+- `run-regression`
+
+or, what will help you with homework:
+
+- `load-library`
+- `q1.(a)` etc
+
+These names are for you to help organize your code. (In practice it will be very useful when you have files with thousands of lines of code...). After the name of the chunk, you can give it certain options, separated by commas. I will highlight one important option. 
+
+- `echo=TRUE` means the code chunk will be copied into the output file. For homework purposes, **ALWAYS** set `echo=TRUE` so we know what code you wrote. When you go out to work in a company and you want to produce nice looking reports, feel free to set it to FALSE.
+
+
+There is a lot to syntax to learn using the R Markdown, but we don't need you to be an expert in R Markdown (although we do expect proficiency in R!). Hopefully, you can copy all the R Markdown syntax you need from the templates we provide. 
+
+
+Note about *working directories* in R Markdown. If you do not specify your working directory via `setwd('...')`, and you hit `Knit`, the document will assume that the working directory is the directory that the `.rmd` file is in. Thus, if your rmd is in `XYZ/folder1/code.rmd` and your dataset is `XYZ/folder1/data.csv`, then you can simply run `d0 <- read.csv('data.csv')` without running `setwd()`.
+
+## Submission Instructions
+
+- Select `output: html_document`.
+- We only require `html` format for assignments/exam. You may want to play with PDF file using pdf_document for your own benefit. 
+- Include all code chunks, so include `echo=TRUE` in all chunks. 
+- Replace the placeholder text, "Type your answer here.", with the answer of your own (This is usually the descriptive and explanation part of your answer).
+- Remember to include any `library('package_name')` statements that you'll need to run your code and future reproduction.
+- You are not required to submit your tutorial assignment outputs. However during the final exam, you will be required to submit both the .rmd and .html files.
+- Rename your R Markdown file `T[X]_[MatricNumber].rmd`, and the output will automatically be `T[X]_[MatricNumber].html`. 
+    - for example, `T6_12345.html`
+    - X is the Tutorial number at the top of this file. For example, this file is for "T6". For tutorials, you can use the following naming conventions or any that is more intuitive to you. 
+
+- **It is important to be able to code and produce your Rmarkdown output file *independently*.** You are responsible for de-bugging and programming in the exam.
+
+## Preparation
+
+```{r load-libraries, echo=TRUE}
+# load required packages at the start here first
+library(dplyr)
+library(tidyr)
+```
+
+## Tutorial 6
+
+Data Sets:
+For this tutorial, you will be using the dataset `Tutorial6_WorldBankData.csv`.
+(Note: This dataset comes from a publicly available dataset from The World Bank. https://databank.worldbank.org/source/world-development-indicators.)
+
+There are 8 variables in this real-world dataset, from 258 countries in 2016/2017:
+- `Human.Capital.Index`: unitless number that goes from 0 to 1.
+- `GDP.per.capita.PPP` in US Dollar. This is GDP per capita, but taking into account the purchasing power of the local currency, by comparing how much it costs to buy a basket of goods (e.g. food) compared to the reference currency (USD). (PPP stands for Purchasing Power Parity)
+- `Health.Expenditure.per.capita` in US Dollar.
+- `Tertiary.Education.Expenditure.per.student` in US Dollar.
+- `Population`.
+- `Life.Expectancy.at.birth` in years.
+- `Diabetes.Prevalence` in units of % of population ages 20 to 79.
+- `Years.of.Compulsory.Education` in years.
+
+Do check the data for missing values. 
+
+```{r q1-read-dataset, echo=TRUE}
+#put in your working directory folder pathname 
+
+#import data file into RStudio
+
+```
+
+### Tutorial 6 Question 1
+
+We start by focusing on the `Human.Capital.Index`. In 2018, Singapore topped the world on this Human Capital Index (See https://www.straitstimes.com/singapore/world-bank-ranks-singapore-tops-in-human-capital-index). You can also learn more about the Human Capital Index and the World Bank study report that first introduced this index here: http://documents.worldbank.org/curated/en/816281518818814423/pdf/2019-WDR-Report.pdf. 
+
+In the following questions, let's try to explore what are some of the possible variables that correlate with the `Human.Capital.Index`.
+
+1a) Start off by plotting the scatter plot of `Human.Capital.Index` (on the y-axis) versus `GDP.per.capita.PPP` (on the x-axis). What type of relationship exists between the two variables? Is it linear? 
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+```{r q1a, echo=TRUE}
+# Enter your codes here
+
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+1b) Try to transform the variable `GDP.per.capita.PPP` with a few functions like `x^2`, `exp(x)`, `log10(x)` and then replot the scatter plot of `Human.Capital.Index` (on the y-axis) versus the transformed `GDP.per.capita.PPP` (on the x-axis). Which plot shows a more linear relationship? (For fun: try adding code into your plot to highlight the dot that represents Singapore.)
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+```{r q1b, echo=TRUE}
+# Enter your codes here
+
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+(1c) Now that you have a plot of a linear relationship, run a linear regression using `lm()`, predicting `Human Capital Index`. Run `summary()` on the `lm` object to produce an output table. Interpret the output of the `lm()`. What do the `b` coefficients mean? (Interpret them "in English" and try to make sense of the numbers, even if they might seem weird at first. How many countries made it into this regression and what happened to the rest? What does the goodness-of-fit statistics tell us about this model. 
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+```{r q1c, echo=TRUE}
+# Enter your codes here
+
+
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+### Question 2 (to be discussed on 23/3/21)
+
+Now let's consider at another set of variables in the same dataset: `Health.Expenditure.per.capita`, `Diabetes.Prevalence`, and `Life.Expectancy.at.birth`.
+
+2a) If you had to design a predictive hypothesis with these three variables, what would it be? That is which would be your dependent variable, and which would be your independent variables? Justify your answer. (Note, this is a discussion question with no marks allocated. There is no necessarily "right" or "wrong" answer for this question, as is the case in real life, but there could be more justifiable answers that you would feel more comfortable putting up to your boss!) 
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+2b) Plot the bivariate relationships between these three variables. (In other words, plot x-y scatterplots. There are 3 variables, so you'll need 3 scatterplots.) For the `Health.Expenditure.per.capita` variable, please also apply the same transformation in (1b) for the scatterplot. Comment on the relationship between the variables. 
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+```{r q2b, echo=TRUE}
+
+# Enter your codes here
+
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+2c) Run a multiple regression predicting `Life.Expectancy.at.birth` using the other two variables. Interpret the coefficients, spelling out what the numbers mean. Comment on your answers. 
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+```{r q2c, echo=TRUE}
+# Enter your codes here
+
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+### Question 3 (to be discussed on 23/3/21)
+
+Let’s again return to Human.Capital.Index as our outcome of interest. According to the World Bank, (https://datacatalog.worldbank.org/dataset/human-capital-index) this index measures the amount of capital that a child born today can expect to attain by age 18, and is influenced by education and healthcare.
+
+3a) A fellow student comes up with a hypothesis that quality of education should affect Human.Capital.Index. But something tells you that this is not so straightforward. What is the danger of putting Tertiary.Education.Expenditure.per.student into a linear model as a regressor? (Hint: Check its distribution by plotting and/or using the summary() function. Is there anything worth noting about this variable?) [2 marks]
+
+Sidenote: The answer to this question comes up very often in practice, and is easily overlooked. The other variables we’ve been using aren’t perfect on this attribute either, but  this is one issue that is worth highlighting and we should take note when working with real life data.
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+```{r q3a, echo=TRUE}
+# Enter your codes here
+
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+3b) Is there a relationship between country population and its Human Capital Index? Is there a need to transform variables? Show this visually and using a linear model. [3 marks]
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+```{r q3b, echo=TRUE}
+# Enter your codes here
+
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+3c) Your manager is interested in factors that predict whether a country is above average on Human.Capital.Index or below average. First, do a median-split on Human.Capital.Index. Specifically, create a variable that is 1 (or TRUE) if the country’s Human.Capital.Index is greater than or equal to the MEDIAN of all countries, and 0 (or FALSE) otherwise. [1 mark]
+
+Next, run a generalized linear model to predict whether a country will be above the median on Human.Capital.Index, using the following variables: GDP.per.capita.PPP, Health.Expenditure.per.capita, Life.Expectancy.at.birth and Diabetes.Prevalence. Apply transformations using your best judgment. [2 marks] Interpret the output of the model, and discuss the meaning of each of the coefficients. [2 marks]
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+```{r q3c, echo=TRUE}
+# Enter your codes here
+
+```
+<p style="color:blue">
+Type your answer here.
+</p>
+
+
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+
