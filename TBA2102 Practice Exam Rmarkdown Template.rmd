@@ -1,0 +1,178 @@
+---
+title: "TBA2101 AY2021 Final Exam"
+author: "TBA2102: REPLACE WITH YOUR NAME"
+date: "29 April 2021, 1:00 - 3:00 PM"
+output: html_document
+---
+
+## Submission Instructions (for Final Exam)
+- **Rename your R Markdown file `FE_[MatricNumber].rmd`**, and the output will automatically be `FE_[MatricNumber].html`. 
+- Select `output: html_document`.
+- Include all code chunks, so include `echo=TRUE` in all chunks.
+- Replace the placeholder text, "Type your answer here.", with your own.
+- Preinstall and include any `library('package_name')` statements before the exam starts. Remember that there is no Internet connection when the exam is in progress.
+
+- You could code and type your answer in this Rmarkdown file during exam but **keep in mind that you need to copy and paste all your answer (r-chunk and text) into Essay Answer section for each question in Examplify.**
+- Submit both your R Markdown file (.rmd) and HTML (.html) to the folder "Final Exam Submission" in Luminus after Examplify submission and Internet reconnection.
+- This Rmarkdown file serves as a reference. **Only answers submitted in Examplify will be graded.** Zero point will be given for blank submission in Examplify even if you have submitted a complete Rmarkdown and HTML files.
+
+## Preparation
+
+```{r load-libraries, echo=TRUE, warning = FALSE, message = FALSE}
+
+# general use
+library(readxl)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(wooldridge)
+
+# descriptive analytics
+library(psych)
+library(rcompanion)
+library (rpivotTable)
+library(EnvStats)
+library(car)
+
+# predictive/prescriptive analytics
+library(TTR)
+library(forecast) 
+library(olsrr)
+library(factoextra)
+library(caret)
+library(tseries) 
+library(lpSolve)
+```
+
+
+## Question 1: CEO Salary-1 (total 10 marks)
+
+Data set: "ceosal1" in wooldridge. This is a data set from a 1991 issue of Business Week of CEO’s salaries in 1990.  
+
+```{r ceo-loaddta1}
+
+# load the data set, make sure you already load `wooldridge` package
+
+data(ceosal1)
+
+
+```
+
+The data.frame has 209 observations on 12 variables: 
+
+- `salary`: 1990 salary, thousands $ 
+- `pcsalary`: percent change salary, 1989-1990 
+- `sales`: 1990 firm sales, millions $ 
+- `roe`: return on equity, 1988-1990 avg 
+- `pcroe`: percent change roe, 1988-1990
+- `ros`: return on firm’s stock, 1988-1990
+- `indus`: =1 if industrial firm 
+- `finance`: =1 if financial firm
+- `consprod`: =1 if consumer product firm 
+- `utility`: =1 if transport or utilities 
+- `lsalary`: natural log of salary 
+- `lsales`: natural log of sales
+
+In the dataset, each observation represent a CEO's salary with its respective firm characteristics.
+
+
+#### (a) In the past, the proportion of CEO with salary greater than or equal to $1 million has averaged around 0.50 (i.e. population proportion for `salary` >= 1million is 0.50). Based on the sample in this dataset, is there sufficient evidence (at 5% level of significance) to conclude that the population proportion for salary being greater than or equal to $1million is equal to 0.5? State your hypotheses, conduct the hypotheses test and provide conclusions. (4 marks)
+
+
+
+TYPE YOUR ANSWER HERE
+
+
+
+
+
+#### (b) You are tasked to explore if CEO salaries vary across firm types.
+(i) First, create a variable `firm` and label it as “1” if it is an industrial firm, “2” if it is a financial firm, “3” if it is a consumer product firm, and “4” if it is a transport or utilities firm. (1 mark)
+(ii) Now, conduct the appropriate test(s) to assess if the mean CEO salary is significantly different across firm type. Present your hypotheses, the results and conclusions. (5 marks)
+
+
+
+TYPE YOUR ANSWER HERE
+
+
+## Question 2: CEO Salary-2 (total 10 marks)
+
+Data set: "ceosal1" in wooldridge. This is a data set from a 1991 issue of Business Week of CEO’s salaries in 1990.  
+
+```{r ceo-loaddta2}
+
+# load the data set, make sure you already load `wooldridge` package
+
+data(ceosal1)
+
+
+```
+
+The data.frame has 209 observations on 12 variables: 
+
+- `salary`: 1990 salary, thousands $ 
+- `pcsalary`: percent change salary, 1989-1990 
+- `sales`: 1990 firm sales, millions $ 
+- `roe`: return on equity, 1988-1990 avg 
+- `pcroe`: percent change roe, 1988-1990
+- `ros`: return on firm’s stock, 1988-1990
+- `indus`: =1 if industrial firm 
+- `finance`: =1 if financial firm
+- `consprod`: =1 if consumer product firm 
+- `utility`: =1 if transport or utilities 
+- `lsalary`: natural log of salary 
+- `lsales`: natural log of sales
+ 
+Each observation represents a CEO's salary with its respective firm characteristics.
+ 
+#### (a) Start by plotting two bivariate scatterplots.
+First, plot the scatterplot of `sales` against `lsalary`. Include a plot of the best fit line using red colour and a title for the plot. Next, plot the scatterplot of `lsales` against `lsalary`, also including a plot of the best fit line in purple and . Which one of the scatterplots shows a more linear relationship? (2 marks)
+
+
+TYPE YOUR ANSWER HERE
+
+
+#### We would like to examine how company performance (such as `roe` and `ros`) relates to CEO salaries. 
+- (i) Run a linear regression model of lsalary ~ roe + ros. Write out the fitted line. What percentage of the variance for lsalary is being explained by `roe` and `ros`? (3 marks)
+- (ii) We were told that firm sales should also affect CEO's salaries. To include firm sales as an explanatory variable for `lsalary`, explain which variable (`sales` or `lsales`) would you include in the linear regression model.  Is this model statistically (with the firm sales variable you have chosen) better at predicting `lsalary` than the model (in b(i)) without the firm sales variable? (5 marks)
+
+
+TYPE YOUR ANSWER HERE
+
+
+## Question 3: Investment Allocation (total 10 marks)
+
+#### Michael received $12,000 as his year-end bonus and would like to invest it. There are three types of funds that he would like to invest in. The government bond fund has a 2.75% return, the bank's fixed deposit (FDs) has a 1.5% return, and the equity fund which has a projected return of 12%. Given his risk profile, he should not allocate more than 30% (in $ value) in the equity fund and he should invest at least three times as much in the government bonds as the FDs. Assuming the year-end yields are as projected, provide Michael with advice on how he should invest his money.
+
+ 
+
+#### (a) Write down your decision variables, the objective function, and ALL constraints that apply for this optimization problem in a table. (3 marks)
+
+Solve this optimization problem in R. What is the optimal dollar investment for the different investment funds? Assuming the year-end yields are as expected, how much can Michael expect to gain from his investment after one year? (3 marks)
+
+```{r ddd echo=TRUE}
+ 
+
+TYPE YOUR ANSWER HERE 
+
+```
+
+ANSWER 
+
+#### (b) Michael was given an additional $2000 for his Long Service award and he would like to also invest this money. Given this, how much should he invest in for each of the 3 funds? (2 marks)
+
+ 
+
+TYPE YOUR ANSWER HERE
+
+
+
+ 
+
+#### (c) Michael would like additional advice on how much would the returns on the fixed deposit fund have to be, minimally, to make it worth investing in. (2 marks)
+
+
+ 
+
+TYPE YOUR ANSWER HERE
+
