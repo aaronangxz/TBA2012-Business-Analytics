@@ -1,0 +1,231 @@
+---
+title: 'Tutorial 10: Linear Optimization'
+author: "TBA2102: REPLACE WITH YOUR NAME"
+date: "Discussion date: 13 April 6.30pm"
+output: html_document
+---
+
+## Submission Instructions (for Final Exam)
+
+- Select `output: html_document`.
+- We only require `html` format for assignments/exam. You may want to play with PDF file using pdf_document for your own benefit. 
+- Include all code chunks, so include `echo=TRUE` in all chunks. 
+- Replace the placeholder text, "Type your answer here.", with the answer of your own (This is usually the descriptive and explanation part of your answer).
+- Remember to include any `library('package_name')` statements that you'll need to run your code and future reproduction.
+- You are not required to submit your tutorial assignment outputs. However during the final exam, you will be required to submit both the .rmd and .html files.
+- Rename your R Markdown file `T[X]_[MatricNumber].rmd`, and the output will automatically be `T[X]_[MatricNumber].html`. 
+    - for example, `T10_12345.html`
+    - X is the Tutorial number at the top of this file. For example, this file is for "T10". For tutorials, you can use the following naming conventions or any that is more intuitive to you. 
+
+- **It is important to be able to code and produce your Rmarkdown output file *independently*.** You are responsible for de-bugging and programming in the exam.
+
+
+## Tutorial 10
+
+```{r load-libraries, echo=TRUE}
+# load required packages
+library(dplyr)
+library(tidyr)
+library(lpSolve) # needed for linear optimisation
+```
+
+### Table Formatting
+
+Please use the following table template to write your systems of linear equations for each of the questions. The example here is based on the "Advertising" example in lecture. This table should exist OUTSIDE any `r` code chunks in order to format properly. Here, we use a pair of "\$"s to enter/exit math mode (this is LaTeX, for those of you who are familiar), which allows us to type symbols like $X_1$, $\leq$ for the "less than or equals" sign and $\geq$ for the "greater than or equals" sign. Use $\,$ (thin space), $\;$ (medium space), $\quad$ (large space, equivalent to curent font size), $\qquad$ (two large spaces) for spacing, so you can leave a blank for decision variables with coefficients of 0. 
+(Note: don't put two \$'s next to each other. Always put a space in between.). 
+
+Maximize total audience exposure (AE) using decision variables $X_1$, $X_2$ | AE = 350 $X_1$ + 800 $X_2$
+--- | --- 
+Subject to |  
+Budget Constraint | 400$X_1$ + 200$X_2$ $\leq$ 25000
+Allocation Constraint | 0.7$X_1$ - 0.3$X_2$ $\leq$ 0
+Non-Negativity Constraint 1 | $X_1$ + $\quad$ $\geq$ 0
+Non-Negativity Constraint 2 | $\quad$ + $X_2$ $\geq$ 0
+
+You may also refer to: https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#tables for additional information regarding table formatting. Do take note that it may take a while to get used to making tables in RMarkdown, and even minor changes may break the table. The most common mistakes are: 
+
+- not having a blank line before and a blank line after each table, 
+- not having the correct number of \|'s, 
+- not ending Math mode correctly, and 
+- putting two \$s next to each other. 
+
+So, do make sure to practice so you can familiarize yourself with writing tables within RMarkdown. 
+
+### Tutorial 10 Question 1
+
+So far, the examples we have discussed in lecture were all maximization problems. In this question we shall explore minimization.
+
+1a) FunToys is famous for three types of toys: Cars, Animals, and Robots. Each year, near the holiday season, it receives large bulk orders for these items. To meet these orders, FunToys operates three small toy-making factories, A, B and C. 
+
+- Factory A costs \$1000 per day to operate, and can produce 30 cars, 20 animals and 30 robots per day.
+- Factory B costs \$1200 per day to operate, and can produce 40 cars, 50 animals and 10 robots per day.
+- Factory C costs \$1500 per day to operate, and can produce 50 cars, 40 animals and 15 robots per day.
+
+This Christmas, FunToys is required to deliver 5000 cars, 3000 animals and 2500 robots. You are tasked to find out what is the most cost-efficient way to meet the order.
+
+In this question, please *IGNORE* integer requirements, i.e., just use fractional answers if/when they come up.
+
+Start by formulating the problem statement as an optimization problem. 
+
+- First, write down your decision variables. 
+- Second, write your objective function in terms of your decision variables.
+- Third, write down the constraints: what are the contractual requirements you need to fulfill. What other constraints are there? Write them down in terms of your decision variables.
+- Summarize them nicely in a table.
+- Remember to include all non negativity constraints at the bottom of the table. This minimizes the chance of making any errors when converting the table to code (like having to "skip" rows.)
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+<p style="color:blue">
+Define your decision variables first
+</p>
+Enter your codes for the linear program (table) here. 
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+1b) Write the R code to solve this optimization problem. Report the optimal solution, and the value of the objective function at that solution. Interpret the solution: what do these numbers mean? (please ignore any integer requirements and just report fractional answers if they appear)
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+
+```{r q1b-lp, echo=TRUE}
+
+# Enter your codes here
+
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+1c) What if there is now an additional constraint that FunToys only has 60 days to complete the order? (Note that we can run all three factories *simultaneously*). What happens now?
+
+Re-produce a new table summarizing the optimization problem (including the existing and new constraints), and write the R code to solve it. What is the new solution, and what is the objective function value?
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+<p style="color:blue">
+Define your decision variables first
+</p>
+
+Enter your codes for the linear program (table) here. 
+
+```{r q1c-lp, echo=TRUE}
+
+# Enter your codes here
+
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+# Enter your codes for the linear program (table) here. 
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+1d) For the solution in 1c, which of the constraints are binding, and which are non-binding? During lecture, we identified this visually and through shadow prices. In this question, let's look for the binding constraints by calculating how many Cars, Animals, and Robots are produced and check if they are bound by the their respective constraints. We can do the same for the factory usage Time constraints. 
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+
+```{r q1d-lp, echo=TRUE}
+
+# Enter your codes here. 
+```
+<p style="color:blue">
+Type your answer here.
+</p>
+
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+1e) Using your solution in 1c, print out the Shadow Prices. Interpret these values -- make sure you can explain why each shadow price is zero or why it is positive/negative! (Note again, that we IGNORE integer requirements in this question, so your $X$ variables can be fractional...)
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+
+```{r q1e-lp, echo=TRUE}
+# Enter your codes here. 
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+### Tutorial 10 Question 2 
+
+You work for a furniture company. Client A has a contract with your company, whereby Client A will purchase all the furniture that you can send them, but you have to deliver at least 10 chairs and 5 tables or risk violating the contract. They will pay \$50 for each chair, and \$120 for each table.
+A chair requires 3 production hours to build, while a table requires 7 production hours, and you have a budget of 60 production hours. Your boss asks you to optimize the furniture production to maximize profit while keeping within budget.
+
+Q2a) Write out the decision variables, objective function and constraints (using the table template provided above). Please include the non-negativity constraints.
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+Q2b) Are there any feasible solutions, and if so, how many chairs and tables should you build to maximise profit? What is the profit associated with this solution? 
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+```{r q2b-lp, echo=TRUE}
+
+# Enter your codes here. 
+```
+
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+Q2c) Now you decide to rent a neighbouring factory, which adds another 60 production hours to your budget (for a total of 120). How many chairs and tables should you build with this new production hours budget? What is the profit associated with this solution? 
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+```{r q2c-lp, echo=TRUE}
+# Enter your codes here. 
+```
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+Q2d) Use sensitivity analysis to answer the following questions based on the answer in 2c):
+
+- How much would you have to increase the selling price of chairs (to Client A) in order to make it more profitable to produce more chairs?
+- How much *more* profit would you make if you are able to secure 1 more production hour?
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+
+```{r q2d-lp, echo=TRUE}
+# Enter your codes here. 
+```
+
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>

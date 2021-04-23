@@ -1,0 +1,260 @@
+---
+title: 'Tutorial 9: Data Mining'
+author: "TBA2102: REPLACE WITH YOUR NAME"
+date: "Discussion date: 6 April 8.30pm"
+output: html_document
+---
+
+## Submission Instructions (for Final Exam)
+
+- Select `output: html_document`.
+- We only require `html` format for assignments/exam. You may want to play with PDF file using pdf_document for your own benefit. 
+- Include all code chunks, so include `echo=TRUE` in all chunks. 
+- Replace the placeholder text, "Type your answer here.", with the answer of your own (This is usually the descriptive and explanation part of your answer).
+- Remember to include any `library('package_name')` statements that you'll need to run your code and future reproduction.
+- You are not required to submit your tutorial assignment outputs. However during the final exam, you will be required to submit both the .rmd and .html files.
+- Rename your R Markdown file `T[X]_[MatricNumber].rmd`, and the output will automatically be `T[X]_[MatricNumber].html`. 
+    - for example, `T9_12345.html`
+    - X is the Tutorial number at the top of this file. For example, this file is for "T9". For tutorials, you can use the following naming conventions or any that is more intuitive to you. 
+
+- **It is important to be able to code and produce your Rmarkdown output file *independently*.** You are responsible for de-bugging and programming in the exam.
+
+## Tutorial 9 
+
+```{r load-libraries, echo=TRUE}
+# load required packages
+library(psych) # for pairs.panels()
+library(factoextra) # for fviz_cluster(); fviz_pca_biplot()
+library(caret) # for confusionMatrix()
+library(dplyr)
+library(tidyr)
+```
+
+### Question 1
+
+Dataset required: `T9_whiskies.csv`
+
+In this question, you will be examining a dataset of Whiskey Taste Indicators. The dataset can be obtained from https://outreach.mathstat.strath.ac.uk/outreach/nessie/nessie_whisky.html. It consists of 86 (Single-Malt) Whiskies that are rated from 0-4 on 12 different taste categories: `Body`, `Sweetness`, `Smoky`, `Medicinal`, `Tobacco`, `Honey`, `Spicy`, `Winey`, `Nutty`, `Malty`, `Fruity`, `Floral`. 
+
+Your task is to try clustering this real dataset, and to interpret the clusters via looking at the cluster centers (in the dimensions of the independent variables), and then generate "profiles" for each cluster.
+
+We will start by importing the data file and extracting the part of the data we need for this question: 
+```{r q1-read-in-dataset, echo=TRUE}
+d1 <- read.csv("T9_whiskies.csv")
+
+# Select the independent variables "X" to keep and put  it into d1X.
+d1X <- d1 %>% select(c("Body", "Sweetness", "Smoky", "Medicinal", "Tobacco", "Honey", "Spicy", "Winey", "Nutty", "Malty", "Fruity", "Floral"))
+```
+
+1a) Start by using `pairs.panels` function in the `psych` package to explore the data. (Just observe the pattern. No need to provide an answer.)
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+```{r q1a-pair-panel, echo=TRUE, fig.width=10}
+
+# Enter your codes here
+
+```
+<p style="color:blue">
+No answer required, just generate the pairs panel and observe the pattern in the data. 
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+Q1b) Next, use Kmeans clustering to group the different whiskies based on their taste profile. Recall that we can use the Elbow method to pick the number of clusters to use. Using the code in the lecture, calculate the Within-Cluster Sum of Squares from k=2 to k=20 clusters using `d1X`, and plot the Within-Cluster Sum of Squares against number of clusters.
+
+*Recall*, if the variables are on very different scales, we should standardize the variables (to have mean 0 and sd 1). But in this case, all the variables are on the same scale (0-4) so it is fine not need to scale the variables. 
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+```{r, q1b-elbow-plot, echo=TRUE}
+
+# Enter your codes here
+
+```
+
+<p style="color:blue">
+No answer required, just generate the plot. 
+</p>
+
+<p style="color:red">**END: YOUR ANSWER**</p>
+
+
+Q1c) The plot in 1b does not seem to have a clear Elbow. The Within-Cluster Sum of Squares seem to keep decreasing without a clear stopping point (note this is a real dataset and this could happen in real datasets). So we may have to use our own judgment to decide on the number of clusters.
+
+Assuming our local business partner applies his expert intuition, and tells us to try fitting kmeans with *3* clusters.
+
+Because the output of k-means depends upon the random initialization of the centroids, we can set the seed of the random number generator, so that all of us (students+TAs+instructors) can get the same results.
+
+<p style="color:green">**Run the following code the line before your k-means code.**</p>
+```
+set.seed(2) 
+... = kmeans(...)
+```
+Then use the `fviz_cluster()` function from the `factoextra` package to plot the results of this clustering.
+
+What do you notice from the graph? (Recall that the graph dimensions will be along the first two principal components.)
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+
+```{r q1c-viz, echo=TRUE}
+set.seed(2) 
+# Enter your codes here
+
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END YOUR ANSWER HERE**</p>
+
+Q1d) Let's use `<kmeans_model_name>$center` (where `<kmeans_model_name>` is the name of the kmeans model you fitted above) to extract the centers of the 3 clusters. The center of the each cluster is the average of all elements within the cluster. After you have obtained the center for each cluster, you can describe each cluster of wine along it own features. For example, you can say for wines in cluster 1, they tend to be high or low on Body-ness, Sweetness, Smoky-ness, Medicinal-ness, Tobacco-ness, etc... Remember the scale of each feature is from 0-4 where a larger number indicates higher amounts of that taste. 
+
+Summarize your observations into a Taste Profile for each Cluster. 
+
+Now if you have a client who really likes Whiskies that are more full bodied, more winey and fruity in taste, which cluster of wines would you recommend to him? (e.g., if this were a real client, you could go back and look at the Distilleries in `d1` and generate a list of those Whiskies in the same cluster.)
+
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+```{r q1d-centers, echo=TRUE}
+# Enter your codes here
+
+
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END YOUR ANSWER HERE**</p>
+
+
+### Question 2 
+
+Dataset required: `T9_breast-cancer.csv`
+
+In this question, we will be doing a simple Principal Component Analysis, building a simple logistic regression classifier, then assessing the output of that classifier.
+
+The dataset for this question is available at: https://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+%28Original%29. 
+
+Here are the variables in the dataset:
+
+- `SampleID`: Sample code number: The ID number of the sample.
+- `Thickness`: Clump Thickness: 1 - 10 
+- `SizeUniformity`: Uniformity of Cell Size: 1 - 10 
+- `ShapeUniformity`: Uniformity of Cell Shape: 1 - 10 
+- `MarginalAdhesion`: Marginal Adhesion: 1 - 10 
+- `EpithelialCellSize`: Single Epithelial Cell Size: 1 - 10 
+- `BareNuclei`: Bare Nuclei: 1 - 10 
+- `BlandChromatin`: Bland Chromatin: 1 - 10 
+- `NormalNucleoli`: Normal Nucleoli: 1 - 10 
+- `Mitoses`: Mitosis: 1 - 10 
+- `Class`: 2 for benign, 4 for malignant
+
+In the code below we will create a new variable `Malignant` which is "1" if `Class` is 4, and "0" otherwise. This would be a clearer dependent variable than `Class`. We also include some codes to remove the incomplete data. 
+
+In this question, we will be interested in using the independent variables (about the characteristics of the cancerous sample) to classify the sample into whether it is Malignant or Benign. Note that `SampleID` is not a useful independent variable. So everything else, from `Thickness` to `Mitoses`, would be our possible independent variables.
+
+```{r q2-read-in-dataset, echo=TRUE}
+d2 = read.csv("T9_breast-cancer.csv", header=T)
+
+# Create a new variable "Malignant" that is TRUE when class is 4 and FALSE when class is 2 (benigh), just so it's clear what Class means
+d2$Malignant <- ifelse(d2$Class=="4", 1, 0)
+
+# removing the 16 rows with incomplete data, just to avoid some programming issues later with PCA and missing data.
+d2 <- d2[complete.cases(d2),]
+
+# Selecting out the independent variables "X".
+d2X <- d2 %>% select(c("Thickness", "SizeUniformity", "ShapeUniformity", "MarginalAdhesion", "EpithelialCellSize", "BareNuclei", "BlandChromatin", "NormalNucleoli", "Mitoses"))
+```
+
+Q2a) Start by using the `pairs.panels()` function from `psych` package to see what the independent variables look like. What do you notice about the relationship between the variables in the data? 
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+````{r q2a-pairs-panels, echo=TRUE, fig.width=10}
+# Enter your codes here
+
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END YOUR ANSWER HERE**</p>
+
+
+Q2b) Summarize the data using Principal Component Analysis. [Hint: Use the `prcomp` function to conduct a PCA. Remember to use`d2X`, not `d2` with `prcomp`.] What is the cumulative proportion of variance explained by the first three PCs?
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+```{r, q2b-pca, echo=TRUE}
+# Enter your codes here
+
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END YOUR ANSWER HERE**</p>
+
+
+2c) Check the loadings on the first 3 PCs. What do you notice? (We will not be attempting to interpret the PCs in this question, since none of us are medically trained. But you may notice that PC1 is **negatively** correlated with **every** single variable. Perhaps (not scientifically though) PC1 roughly captures (the negative of) the "**amount** of cancerous material". Could you make a guess of the sign of the coefficient if you are to use PC1 to predict Malignancy?)
+
+**Note: ** Principal Components are just vectors in some high-dimensional space, and so actually it doesn't matter whether they are a vector pointing right or pointing left. We are only interested in how they are pointing relative to all the other variables.
+
+```{r, q2c-pca-loadings, echo=TRUE}
+# Enter your codes here
+
+```
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END YOUR ANSWER HERE**</p>
+
+Q2d) Extract the first three PCs back into d2. Construct and run a logistic regression, predicting `Malignant` from the first three principal components. Which coefficients are significant? 
+
+Using a model with all three PCs, use `predict(<glm_object>, type='response')` to ask the model to predict the probability of Malignant. Let's make the assumption that if the probability is >=0.50, that the model says "Yes, it is Malignant", and if it's <0.50, the model says "No, it is not Malignant". Store the binary predictions as a variable `prediction` in `d2`. How many "Yes" and "No" predictions did the model make?
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+```{r, q2d-logregression, echo=TRUE}
+# Enter your codes here
+
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END YOUR ANSWER HERE**</p>
+
+
+Q2e) Construct a confusion matrix. You can either use the confusionMatrix () function in the caret package, or use `table(x1, x2)` with both your model's "Yes/No" predictions and the actual `Malignant` values. 
+
+- How many True Positives/True Negatives/False Positives/False Negatives are there?
+- What is the model's overall classification accuracy, recall, precision, specificity and F1 scores?
+
+What would you say about the performance of this model? 
+
+<p style="color:red">**BEGIN: YOUR ANSWER**</p>
+
+
+```{r q2e-confusionMatrix, echo=TRUE}
+# Enter your codes here
+
+
+```
+
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END YOUR ANSWER HERE**</p>
+
+
+
+
