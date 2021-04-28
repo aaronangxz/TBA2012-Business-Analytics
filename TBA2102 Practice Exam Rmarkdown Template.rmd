@@ -33,6 +33,7 @@ library(rcompanion)
 library (rpivotTable)
 library(EnvStats)
 library(car)
+library(rstatix)
 
 # predictive/prescriptive analytics
 library(TTR)
@@ -50,12 +51,9 @@ library(lpSolve)
 Data set: "ceosal1" in wooldridge. This is a data set from a 1991 issue of Business Week of CEO’s salaries in 1990.  
 
 ```{r ceo-loaddta1}
-
 # load the data set, make sure you already load `wooldridge` package
-
 data(ceosal1)
-
-
+CS <- ceosal1  
 ```
 
 The data.frame has 209 observations on 12 variables: 
@@ -75,25 +73,85 @@ The data.frame has 209 observations on 12 variables:
 
 In the dataset, each observation represent a CEO's salary with its respective firm characteristics.
 
-
 #### (a) In the past, the proportion of CEO with salary greater than or equal to $1 million has averaged around 0.50 (i.e. population proportion for `salary` >= 1million is 0.50). Based on the sample in this dataset, is there sufficient evidence (at 5% level of significance) to conclude that the population proportion for salary being greater than or equal to $1million is equal to 0.5? State your hypotheses, conduct the hypotheses test and provide conclusions. (4 marks)
+<p style="color:blue">
+Let P be population proportion of CEO salaries greater than or equal to $1 million.<br>
+H0: P = 0.5<br>
+H1: P != 0.5
+</p>
+```{r q1a}
+#One sample t test on population proportion:
+#Computing proportion of salary >= 1000 (Since unit is in k, 1 million is 1000k)
+#Select rows with >= 1000
+n1000 = CS%>%filter(salary>=1000)
+salary.hat = nrow(n1000)/nrow(CS)
 
+#Z-statistics
+z.salaryhat <- (salary.hat - 0.5) / sqrt(0.5 * (1 - 0.5) / nrow(CS))
+z.salaryhat
 
-
-TYPE YOUR ANSWER HERE
-
-
-
-
+#p-value
+pnorm(z.salaryhat)
+```
+<p style="color:blue">
+Can either compare z statistics with critical value or check if the p-value is less than 0.05.<br>
+Since p-value of z statistics of 0.622543 is 0.733 > 0.05, we do not have sufficient evidence to reject H0 at the 5% level of significance.
+</p>
 
 #### (b) You are tasked to explore if CEO salaries vary across firm types.
 (i) First, create a variable `firm` and label it as “1” if it is an industrial firm, “2” if it is a financial firm, “3” if it is a consumer product firm, and “4” if it is a transport or utilities firm. (1 mark)
+
+```{r q1bi}
+#Create 'firm' variable
+firm <- NA
+CS$firm[CS$indus == 1] <- 1
+CS$firm[CS$finance == 1] <- 2
+CS$firm[CS$consprod == 1] <- 3
+CS$firm[CS$utility == 1] <- 4
+CS$firm = as.factor(CS$firm)
+```
+
 (ii) Now, conduct the appropriate test(s) to assess if the mean CEO salary is significantly different across firm type. Present your hypotheses, the results and conclusions. (5 marks)
+To compare means across more than 2 groups - use ANOVA (check assumptions)
+```{r q1bii}
+#Test normality of salary for each data segment
+I <- CS %>% filter(indus == 1)
+Fi <- CS %>% filter(finance == 1)
+C <- CS %>% filter(consprod == 1)
+U <- CS %>% filter(utility == 1)
 
+shapiro.test(I$salary)
+shapiro.test(Fi$salary)
+shapiro.test(C$salary)
+shapiro.test(U$salary)
 
+```
+Salary does not appear to be normally distributed across 4 samples but ANOVA is quite robust against deviation from normality.
+<br>
+Check equal variance assumption: (Since sample sizes are not equal, need to check this assumption.)
+```{r q1biii}
+#Check sample sizes
+nrow(I)
+nrow(Fi)
+nrow(C)
+nrow(U)
+fligner.test(`salary`~firm,CS)
+```
+We use Fligner-Kileen test since data deviates quite a lot from normality. From the results, we find that p<0.05, hence we can conclude that there is <b>sufficient evidence</b> to reject H0 that the variances are equal. <br>
+Hence, given that variances are not significantly equal, we can proceed to conduct Welch ANOVA. (Instead of normal ANOVA)
 
-TYPE YOUR ANSWER HERE
-
+```{r q1biiii}
+#Welch ANOVA
+waCS <- welch_anova_test(CS,`salary`~`firm`)
+ghCS <- games_howell_test(CS,`salary` ~ `firm`)
+waCS
+ghCS
+```
+<p style="color:blue">
+From Welch ANOVA results, we find there is sufficient evidence to reject H0 (F = 4.506, p = 0.000000566) as p < 0.05. <br>
+Then we perform Games Howell's test for pairwise comparison. <br>
+We find that there are 3 pairs of firm (1-4; 2-4; 3-4) that are significantly different (with *).
+</p>
 
 ## Question 2: CEO Salary-2 (total 10 marks)
 
@@ -128,51 +186,137 @@ Each observation represents a CEO's salary with its respective firm characterist
 #### (a) Start by plotting two bivariate scatterplots.
 First, plot the scatterplot of `sales` against `lsalary`. Include a plot of the best fit line using red colour and a title for the plot. Next, plot the scatterplot of `lsales` against `lsalary`, also including a plot of the best fit line in purple and . Which one of the scatterplots shows a more linear relationship? (2 marks)
 
+```{r q2ai}
+#Using baseR
+model1.1 <- lm(CS$sales ~ CS$lsalary)
+plot(x=CS$lsalary, y=CS$sales)
+abline(model1.1, col = "red", lwd=3)
+#To plot regression line : abline(lm of regression, color, line width)
 
-TYPE YOUR ANSWER HERE
-
-
+model1.2 <- lm(CS$lsales~CS$lsalary)
+plot(x = CS$lsalary, y = CS$lsales)
+abline(model1.2, col="purple",lwd=3)
+```
+<p style="color:blue">
+From the scatterplots, `lsales` against `lsalary` shows more linear relationship.
+</p>
 #### We would like to examine how company performance (such as `roe` and `ros`) relates to CEO salaries. 
 - (i) Run a linear regression model of lsalary ~ roe + ros. Write out the fitted line. What percentage of the variance for lsalary is being explained by `roe` and `ros`? (3 marks)
 - (ii) We were told that firm sales should also affect CEO's salaries. To include firm sales as an explanatory variable for `lsalary`, explain which variable (`sales` or `lsales`) would you include in the linear regression model.  Is this model statistically (with the firm sales variable you have chosen) better at predicting `lsalary` than the model (in b(i)) without the firm sales variable? (5 marks)
 
+(i)<br>
+```{r q2bi}
+model2<-lm(lsalary ~ roe + ros, data = CS)
+summary(model2)
+```
+<p style="color:blue">
+Fitted line: lsalary = 0.01647 x roe - 0.001185 x roa + 6.740606<br>
+Perventage of variance explained is 0.06629 (or 6.23%)
+</p>
 
-TYPE YOUR ANSWER HERE
-
-
+(ii)<br>
+<p style="color:blue">
+lsales should be included in the model given that the plot between lsales and lsalary is more linear than sales and lsalary.
+</p>
+```{r q2bii}
+model3 <- lm(lsalary ~ lsales + roe + ros, data = CS)
+summary(model3)
+anova(model2,model3)
+```
+<p style="color:blue">
+From the ANOVA results, we see that there is a significant difference between the 2 linear regression models (with and without lsales) with F-statistics of 62.99 and p < 0.001. <br>
+Hence we can conclude that the model with lsales is statistically better at predicting lsalary than the model without lsales.
+</p>
+        
 ## Question 3: Investment Allocation (total 10 marks)
 
 #### Michael received $12,000 as his year-end bonus and would like to invest it. There are three types of funds that he would like to invest in. The government bond fund has a 2.75% return, the bank's fixed deposit (FDs) has a 1.5% return, and the equity fund which has a projected return of 12%. Given his risk profile, he should not allocate more than 30% (in $ value) in the equity fund and he should invest at least three times as much in the government bonds as the FDs. Assuming the year-end yields are as projected, provide Michael with advice on how he should invest his money.
 
- 
-
 #### (a) Write down your decision variables, the objective function, and ALL constraints that apply for this optimization problem in a table. (3 marks)
+
+<p style="color:blue">
+Let G be the dollar investment in government bonds, F be the dollar investment in fixed deposits and E be the dollar investment in equity funds.
+</p>
+
+Maximize total expected returns usign decision variables G, F, E | Returns = 0.0275G + 0.015F + 0.12E
+--- | --- 
+Subject to |  
+Budget Constraint | G + F + E $\leq$ 12000
+Allocation Constraint 1 | $\quad$ + $\quad$ + E $\leq$ 3600
+Allocation Constraint 2  | G - 3F + $\quad$ $\geq$ 0
+Non-Negativity Constraint 1 | G + $\quad$ + $\quad$ $\geq$ 0
+Non-Negativity Constraint 2 | $\quad$ + F + $\quad$ $\geq$ 0
+Non-Negativity Constraint 3 | $\quad$ + $\quad$ + E $\geq$ 0
 
 Solve this optimization problem in R. What is the optimal dollar investment for the different investment funds? Assuming the year-end yields are as expected, how much can Michael expect to gain from his investment after one year? (3 marks)
 
-```{r ddd echo=TRUE}
- 
+```{r ddd, echo=TRUE}
+ #Defining parameters
+objective.fn <- c(0.0275, 0.015, 0.12)
+const.max <- matrix(c(1, 1, 1,
+                      0, 0, 1,
+                      1, -3, 0),
+                    ncol = 3,
+                    byrow = TRUE)
+const.dir <- c("<=","<=",">=")
+const.rhs <- c(12000, 3600, 0)
 
-TYPE YOUR ANSWER HERE 
+#Solving model
+lp.solution <- lp("max", objective.fn, const.max, const.dir, const.rhs, compute.sens = TRUE)
+#Decision variables values
+lp.solution$solution
+
+lp.solution
 
 ```
-
-ANSWER 
+<p style="color:blue">
+The optimal investment would be to invest \$8400 in government bonds, \$0 in fixed deposits, and \$3600 in equity funds.<br>
+He can expect to gain $663 from this investment.
+</p>
 
 #### (b) Michael was given an additional $2000 for his Long Service award and he would like to also invest this money. Given this, how much should he invest in for each of the 3 funds? (2 marks)
 
- 
+Maximize total expected returns usign decision variables G, F, E | Returns = 0.0275G + 0.015F + 0.12E
+--- | --- 
+Subject to |  
+Budget Constraint | G + F + E $\leq$ 14000
+Allocation Constraint 1 |$\quad$+$\quad$+ E $\leq$ 4200
+Allocation Constraint 2  | G - 3F +$\quad$ $\geq$ 0
+Non-Negativity Constraint 1 | G +$\quad$+$\quad$ $\geq$ 0
+Non-Negativity Constraint 2 |$\quad$+ F +$\quad$ $\geq$ 0
+Non-Negativity Constraint 3 |$\quad$+$\quad$+ E $\geq$ 0
 
-TYPE YOUR ANSWER HERE
+```{r q3bi, echo=TRUE}
+ #Defining parameters
+objective.fn <- c(0.0275, 0.015, 0.12)
+const.max <- matrix(c(1, 1, 1,
+                      0, 0, 1,
+                      1, -3, 0),
+                    ncol = 3,
+                    byrow = TRUE)
+const.dir <- c("<=","<=",">=")
+const.rhs <- c(14000, 4200, 0)
 
+#Solving model
+lp.solution <- lp("max", objective.fn, const.max, const.dir, const.rhs, compute.sens = TRUE)
+#Decision variables values
+lp.solution$solution
 
+lp.solution
 
- 
+```
+<p style="color:blue">
+The optimal investment would be to invest \$9800 in government bonds, \$0 in fixed deposits, and \$4200 in equity funds.<br>
+He can expect to gain $773.5 from this investment.
+</p>
 
 #### (c) Michael would like additional advice on how much would the returns on the fixed deposit fund have to be, minimally, to make it worth investing in. (2 marks)
 
+```{r q3c, echo=TRUE}
+lp.solution$sens.coef.from
+lp.solution$sens.coef.to
+```
 
- 
-
-TYPE YOUR ANSWER HERE
-
+<p style="color:blue">
+The returns on the fixed deposit fund have to be, minimally 2.76% to make it worth investing in.
+</p>
