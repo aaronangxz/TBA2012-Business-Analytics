@@ -51,8 +51,7 @@ d1X <- d1 %>% select(c("Body", "Sweetness", "Smoky", "Medicinal", "Tobacco", "Ho
 <p style="color:red">**BEGIN: YOUR ANSWER**</p>
 ```{r q1a-pair-panel, echo=TRUE, fig.width=10}
 
-# Enter your codes here
-
+pairs.panels(d1X,lm = TRUE)
 ```
 <p style="color:blue">
 No answer required, just generate the pairs panel and observe the pattern in the data. 
@@ -66,13 +65,20 @@ Q1b) Next, use Kmeans clustering to group the different whiskies based on their 
 
 <p style="color:red">**BEGIN: YOUR ANSWER**</p>
 ```{r, q1b-elbow-plot, echo=TRUE}
+set.seed(1) #to get consistent results
+wss <- rep(NA,20) #initialize : repeat 20 times
+for(k in c(2:20)) #subgroup minimum of 2
+{
+  #nstart = 10 => 10 centroids
+  wss[k] = kmeans(d1X,k,nstart = 10)$tot.withinss
+}
 
-# Enter your codes here
+plot(wss,type = "b", xlab = "Number of clusters", ylab = "Total within-cluster sum of squares")
 
 ```
 
 <p style="color:blue">
-No answer required, just generate the plot. 
+No clear elbow.
 </p>
 
 <p style="color:red">**END: YOUR ANSWER**</p>
@@ -97,13 +103,13 @@ What do you notice from the graph? (Recall that the graph dimensions will be alo
 
 
 ```{r q1c-viz, echo=TRUE}
-set.seed(2) 
-# Enter your codes here
-
+set.seed(1) 
+km_obj <- kmeans(d1X,3)
+fviz_cluster(km_obj, d1X)
 ```
 
 <p style="color:blue">
-Type your answer here.
+
 </p>
 
 <p style="color:red">**END YOUR ANSWER HERE**</p>
@@ -118,13 +124,11 @@ Now if you have a client who really likes Whiskies that are more full bodied, mo
 <p style="color:red">**BEGIN: YOUR ANSWER**</p>
 
 ```{r q1d-centers, echo=TRUE}
-# Enter your codes here
-
-
+km_obj$centers
 ```
 
 <p style="color:blue">
-Type your answer here.
+Cluster 1 will be fuller bodied, less sweet, more smoky, more medicinal, more tobaccoy, less honey, less fruity and less floral than the rest. <br>This is probably what PC1 is picking up on.
 </p>
 
 <p style="color:red">**END YOUR ANSWER HERE**</p>
@@ -173,8 +177,7 @@ Q2a) Start by using the `pairs.panels()` function from `psych` package to see wh
 
 <p style="color:red">**BEGIN: YOUR ANSWER**</p>
 ````{r q2a-pairs-panels, echo=TRUE, fig.width=10}
-# Enter your codes here
-
+pairs.panels(d2X, lm = TRUE)
 ```
 
 <p style="color:blue">
@@ -189,12 +192,14 @@ Q2b) Summarize the data using Principal Component Analysis. [Hint: Use the `prco
 <p style="color:red">**BEGIN: YOUR ANSWER**</p>
 
 ```{r, q2b-pca, echo=TRUE}
-# Enter your codes here
-
+#center: centre a variable to have middle 0
+#scale: different predictors are comparable.
+d2pca <- prcomp(d2X, center = TRUE, scale = TRUE)
+summary(d2pca)
 ```
 
 <p style="color:blue">
-Type your answer here.
+PC1 explains most of the variance in the data. First 3 PCs explain 80.1% of data.
 </p>
 
 <p style="color:red">**END YOUR ANSWER HERE**</p>
@@ -205,11 +210,10 @@ Type your answer here.
 **Note: ** Principal Components are just vectors in some high-dimensional space, and so actually it doesn't matter whether they are a vector pointing right or pointing left. We are only interested in how they are pointing relative to all the other variables.
 
 ```{r, q2c-pca-loadings, echo=TRUE}
-# Enter your codes here
-
+d2pca$rotation[,1:3]
 ```
 <p style="color:blue">
-Type your answer here.
+PC1 will be negatively correlated to Malignancy.
 </p>
 
 <p style="color:red">**END YOUR ANSWER HERE**</p>
@@ -221,12 +225,24 @@ Using a model with all three PCs, use `predict(<glm_object>, type='response')` t
 <p style="color:red">**BEGIN: YOUR ANSWER**</p>
 
 ```{r, q2d-logregression, echo=TRUE}
-# Enter your codes here
+d2$pc1 <- d2pca$x[,"PC1"]
+d2$pc2 <- d2pca$x[,"PC2"]
+d2$pc3 <- d2pca$x[,"PC3"]
 
+#Generalized linear model
+#'binomial' for logistic regression
+d2regpc <- glm(Malignant ~ pc1 + pc2 + pc3,d2,family = 'binomial')
+summary(d2regpc)
+
+d2$prediction = round(predict(d2regpc, type='response'))
+d2$prediction <- ifelse(d2$prediction >= 0.5, 1, 0)
+
+table(d2$prediction)
 ```
 
 <p style="color:blue">
-Type your answer here.
+pc1 is significant, p values is < 0 <br>
+pc3 is significant, p value is < 0.01
 </p>
 
 <p style="color:red">**END YOUR ANSWER HERE**</p>
@@ -243,14 +259,25 @@ What would you say about the performance of this model?
 
 
 ```{r q2e-confusionMatrix, echo=TRUE}
-# Enter your codes here
 
+table(d2$Malignant, d2$prediction)
 
+cm = confusionMatrix(as.factor(d2$prediction),as.factor(d2$Malignant),positive = "1")
+cm
 ```
 
 
 <p style="color:blue">
-Type your answer here.
+True Positive = 227<br>
+True Negative = 433<br>
+False Positive = 11<br>
+False Negative = 12<br>
+<br>
+Classification accuracy = 227 + 433 / 683 =  96.6%<br>
+Precision = 227 / (227 + 11) = 95.4%<br>
+Recall = 227 / (227 + 12) = 95%<br>
+F1 = 2 x [(Precision x Recall) / (Precision + Recall)]<br>
+2 x (95.4 * 95) / (95.4 + 95) = 95.2% (allow some rounding for F1)
 </p>
 
 <p style="color:red">**END YOUR ANSWER HERE**</p>

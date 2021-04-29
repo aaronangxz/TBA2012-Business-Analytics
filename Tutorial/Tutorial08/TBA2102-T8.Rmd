@@ -1,0 +1,337 @@
+---
+title: 'Tutorial 8: Times Series Forecasting'
+author: "TBA2102: REPLACE WITH YOUR NAME"
+date: "Discussion date: 30 March 8.30pm"
+output: html_document
+---
+
+## Instructions 
+
+- Select `output: html_document`.
+- We only require `html` format for exam. You may want to play with PDF file using pdf_document for your own benefit. 
+- Include all code chunks, so include `echo=TRUE` in all chunks. 
+- Replace the placeholder text, "Type your answer here.", with the answer of your own (This is usually the descriptive and explanation part of your answer).
+- Remember to include any `library('package_name')` statements that you'll need to run your code and future reproduction.
+- You are not required to submit your tutorial assignment outputs. However during the final exam, you will be required to submit both the .rmd and .html files.
+- Rename your R Markdown file `T[X]_[MatricNumber].rmd`, and the output will automatically be `T[X]_[MatricNumber].html`. 
+    - for example, `T8_12345.html`
+    - X is the Tutorial number at the top of this file. For example, this file is for "T8". For tutorials, you can use the following naming conventions or any that is more intuitive to you. 
+
+- **It is important to be able to code and produce your Rmarkdown output file *independently*.** You are responsible for de-bugging and programming in the exam.
+
+## Tutorial 8
+
+```{r load-libraries, echo=FALSE}
+# load required packages
+
+#library(ggplot2) # optional
+library(TTR)
+library(forecast) 
+library(wooldridge)
+library(dplyr)
+library(tidyr)
+library(regclass)
+library(car)
+library(olsrr)
+```
+
+
+### Tutorial 8 Question 1 
+
+- Dataset required: `T8hdb.csv`
+
+Note: This dataset comes from publically available data from the Singapore Department of Statistics, or SingStat. https://data.gov.sg/dataset/hdb-resale-price-index. 
+
+First, load in the dataset for this question. There is only one variable, which is the average HDB resale price index. Q1 (or first quarter) of 2009 is set as the "base" period, and thus has by definition an index value of 100. The index values of the rest of the years are relative to this base value.
+
+The code below creates a "train" and "test" dataset. The "train" dataset comprises of data from all years except 2018 and 2019. The "test" data then contains data in Years 2018 and 2019, to test the predictions of our model. This means we can fit the model using the "train" dataset, and then once we have the fitted model, we test the fitted model with the "test" dataset to see how well our fitted model perform against the real data (in 2018 and 2019).
+
+```{r q1-read-in-dataset, echo=TRUE}
+hdb_wide = read.csv('T8hdb.csv', header=T, na.strings = "NA")
+# removing unused columns
+hdb_wide=hdb_wide[,2:119]
+
+# convert to a `ts` object:
+hdb_ts = ts(unlist(hdb_wide[1,1:ncol(hdb_wide)], use.names=F), frequency=4, start = c(1990, 1))
+
+# We also create a long form data frame. You can try understanding what each step in this code does by running each line separately (without the last %>%), and inspecting the resulting file using head(hdb_long)
+hdb_long <- hdb_wide %>% 
+  # gather() converts wide-form to long-form. 
+  gather(key="YearQuarter", value="PriceIndex") %>%
+  # remove "X"
+  mutate_at("YearQuarter", function(x) {sub(pattern="X", replacement="", x)}) %>% 
+  # split "YearQuarter" into a "Year" variable and a "Quarter" variable
+  # and make a variable called "TimeIndex" that just goes 1, 2, 3, 4...
+  mutate( Year = as.numeric(substr(YearQuarter, start=1, stop=4)),
+          Quarter = substr(YearQuarter, start=6, stop=7),
+          TimeIndex = 1:length(YearQuarter)) %>%
+  # Rearrange the columns in a nicer order
+  select("TimeIndex", "YearQuarter", "Year", "Quarter", "PriceIndex")
+
+hdb_test = hdb_long[113:118,] # exclude values in 2018 and 2019 for testing later
+hdb_train = hdb_long[1:112,] # keeping values up to and including 2016
+
+#we can also create the test and train data in time-series format by subsetting the original data in time series format using the window() function
+hdbtest_ts<- window(hdb_ts, start=2018)
+hdbtrain_ts<- window(hdb_ts,start=1990,end=2017)
+
+```
+
+Q1a) First, plot the data. There is only one variable, so just plot this against time on the horizontal axis. How would you describe the time series? (Stationary? Trend? Seasons? Cycles?)
+
+<p style="color:red">**BEGIN YOUR ANSWER HERE**</p>
+
+```{r q1a-plot, echo=TRUE}
+plot(hdb_ts, ylab = "HDB Price Index")
+```
+
+
+<p style="color:blue">
+There seems to be an increasing trend but no seasonal effects observed in the HDB price index.
+</p>
+
+<p style="color:red">**END YOUR ANSWER HERE**</p>
+
+
+Q1b) Using the Simple Moving Average model, where 
+$\hat{Y}_{t+1} = \frac{1}{k} \left(Y_t + Y_{t-1} + \ldots + Y_{t-(k-1)} \right)$
+forecast the HDB Price Index during the observed period. 
+Calculate one forecast with a window size of 4 periods (1 year) and assign it to "hdb_long\$SMApred4". Next calculate a second forecast with a window size of 16 periods (4 years) and assign it to "hdb_long$SMApred16". Plot these two forecasts (and the actual data) on the same plot. Discuss what you see.
+
+Which window size produced a better forecast? Evaluate by computing the RMSE for each model.
+
+$RMSE = \sqrt{\frac{1}{n}\sum_i(\hat{y}_i-y_i)^2}$
+
+**NOTE**: You have stored the predicted values of Price Index in two new variables `SMApred4` and `SMApred16` in the `hdb_long` dataframe (long format of the HDB dataframe). These can be used for computation of any statistics you need. 
+
+
+<p style="color:red">**BEGIN YOUR ANSWER HERE**</p>
+
+```{r q1b-sma, echo=TRUE}
+hdb_long$SMApred4 = dplyr::lag(SMA(hdb_long$PriceIndex, n=4),1)
+hdb_long$SMApred16 = dplyr::lag(SMA(hdb_long$PriceIndex, n=16),1)
+
+#Using R base to plot the original, pred4 & pred16 values
+plot(hdb_long$TimeIndex,hdb_long$SMApred4,xlab="Time",ylab="Price",type="l",col="green",lwd=2)
+lines(hdb_long$TimeIndex,hdb_long$SMApred16,col="red",lwd=2)
+lines(hdb_long$TimeIndex,hdb_long$PriceIndex,col="black",lwd=1)
+title("HDB Price Index (Predicted)")
+legend("bottomright",c("k=4","k=6","actual"),lwd=c(2,2,1), col=c("green","red","black"))
+
+#Computing RMSE for window=4
+rmse_sma4 <- sqrt(mean((hdb_long$SMApred4 - hdb_long$PriceIndex)^2,na.rm=TRUE)) #Set na.rm = TRUE
+rmse_sma4
+#Computing RMSE for window=16
+rmse_sma16 <- sqrt(mean((hdb_long$SMApred16 - hdb_long$PriceIndex)^2,na.rm=TRUE)) #Set na.rm = TRUE
+rmse_sma16
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END YOUR ANSWER HERE**</p>
+
+
+Q1c) Based on what you observed about the time-series in Q1a, fit a HoltWinters model to the HDB train dataset, `hdbtrain_ts`. Use the model to predict the next 6 periods (6 quarters), and plot the predictions.
+
+<p style="color:red">**BEGIN YOUR ANSWER HERE**</p>
+
+```{r q1c-holtwinters, echo=TRUE}
+hdbtrain_hw <- HoltWinters(hdbtrain_ts,gamma=FALSE)
+hdbtrain_hw
+#Predict 6 periods
+hdbtrain_hw_pred <- predict(hdbtrain_hw,n.ahead = 6)
+plot(hdbtrain_hw,hdbtrain_hw_pred, xlim = c(1990,2020))
+
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END YOUR ANSWER HERE**</p>
+
+
+Q1d) Compare the HoltWinters model's (Q1c) predictions with `hdb_test`, which contains the actual values for 2018/2019. (Hint: use `XXX[1:Y]` to extract the first few values from the `predict` object).
+
+Make a plot of the Holt-Winters predictions and the actual values in `hdb_test`, both on the y axis and with time on the horizontal axis. Use colors and/or linetypes to differentiate, and include a legend.
+
+What is the RMSE for these 6 predicted data points? 
+
+<p style="color:red">**BEGIN YOUR ANSWER HERE**</p>
+
+```{r q1d, echo=TRUE}
+#RMSE
+rmse_hdbtrain_hw = sqrt(mean((hdbtrain_hw_pred[1:6] - hdb_test$PriceIndex)^2))
+rmse_hdbtrain_hw
+
+#RMSE for these 6 predicted data points if Holtwinter is ran with gamma = TRUE
+hdbtrain_hw_gamma = predict(HoltWinters(hdbtrain_ts),n.ahead = 6)
+rmse_hdbtrain_hw_gamma = sqrt(mean((hdbtrain_hw_gamma[1:6] - hdb_test$PriceIndex)^2))
+rmse_hdbtrain_hw_gamma
+
+#Holtwinters plot
+plot_min_value = min(c(hdbtrain_hw_pred[1:6],hdb_test$PriceIndex))
+plot_max_value = max(c(hdbtrain_hw_pred[1:6],hdb_test$PriceIndex))
+
+plot(113:118,hdbtrain_hw_pred[1:6],type="l",col = "magenta",ylim = c(plot_min_value,plot_max_value),ylab="Price Index",xlab = "TimeIndex")
+lines(113:118,hdb_test$PriceIndex, type="l",col="black")
+legend("topright",legend=c("Holt-Winters","Actual"),col=c("magenta","black"),lty=1)
+```
+
+- <p style="color:blue"> 
+
+Type your answer here.
+<p style="color:red">**END YOUR ANSWER HERE**</p>
+
+
+Q1e) Compute also the RMSE for the 6 predicted data points using SMA4 (Simple Moving Average with Window of 4) against the `hdb_test`. Add the line for SMA4 to the plot in Q1d. What do you notice? Does HoltWinters model perform better than the SMA4 model? 
+
+(Discuss: The RMSE for SMA4 is computed based on the complete dataset. What if you have computed the SMA4 using the hdb_train dataset instead?)
+
+<p style="color:red">**BEGIN YOUR ANSWER HERE**</p>
+
+```{r q1e, echo=TRUE}
+rmse_sma4_last6 <- sqrt(mean((hdb_long$SMApred4[113:118] - hdb_test$PriceIndex)^2))
+rmse_hdbtrain_hw
+rmse_sma4_last6
+
+plot_min_value = min(c(hdbtrain_hw_pred[1:6],hdb_test$PriceIndex))
+plot_max_value = max(c(hdb_long$SMApred4[113:118],hdbtrain_hw_pred[1:6],hdb_test$PriceIndex))
+
+plot(113:118,hdbtrain_hw_pred[1:6],type="l",col = "red",ylim = c(plot_min_value,plot_max_value),ylab="Price Index",xlab = "TimeIndex")
+lines(113:118,hdb_test$PriceIndex, type="l",col="black")
+lines(113:118,hdb_long$SMApred4[113:118], type="l",col="blue")
+legend("topright",legend=c("Holt-Winters","Actual","SMA4"),col=c("magenta","black","blue"),lty=1)
+```
+
+<p style="color:blue"> 
+Comparing the RMSE, we can see that the HW model has a slightly lower RMSE hence performs better.<br>
+The SMA4 model predicts values that are all greater than the actual values whereas the HW model has predictions that are above and below the actual values.
+</p>
+<p style="color:red">**END YOUR ANSWER HERE**</p>
+
+
+
+### Tutorial 8 Question 2 
+
+- Dataset required: `data('fertil3)` in `wooldridge` package.
+
+(Note: This dataset comes from a publically available dataset from Jeffery Wooldridge Textbook. See data description in https://rdrr.io/cran/wooldridge/man/fertil3.html)
+
+First, load in the time series data for this question. There are 72 observations on 24 variables about women fertility rate between year 1913 and 1984. Key variables are listed below:
+
+- `gfr`: births per 1000 women between age 15 and 44.
+- `pe`: real value personal tax exemption in US dollars.
+- `t` : time trend, t=1,...,72
+- `ww2`: a binary variable = 1 during World War 2 between 1941 and 1945.
+- `pill`: a binary variable = 1 from 1963 on when the birth control pill was made available for contraception.
+
+```{r q2-read-dataset, echo=TRUE}
+# read dataset into workplace, note that you need library(wooldridge) to load this data set
+data('fertil3')
+# convert the data to ts object, with frequency = 1 and start = 1913
+fertil = ts(fertil3, frequency = 1, start = 1913)
+
+```
+
+High fertility rate is essential for long-term growth in any economy. Many countries are bothered with low or even negative fertility rate. For example, the fertility rate in Singapore in general shows a decreasing trend in recent decades (https://www.channelnewsasia.com/news/singapore/number-of-babies-born-in-singapore-falls-to-lowest-in-8-years-11743722). Fertility is affected by many socio-economic factors, including single rate, family disposable income, level of tax duty, war attrition, contraception technology, etc. `fertil3` data contains information about women's fertility rate and personal tax exemption in U.S. in early-mid 1900s. 
+
+(2a) Start off by plotting `gfr` (fertility rate) and `pe` (personal tax exemption) against time. What do you observe from the time series plots alone? Do you see any trend or seasonality? Is `gfr` time series stationary?
+
+<p style="color:red">**BEGIN YOUR ANSWER HERE**</p>
+
+```{r q2a, echo=TRUE}
+plot(fertil[,"gfr"])
+plot(fertil[,"pe"])
+
+#OR plot two time series together
+ts.plot(fertil[,"gfr"],fertil[,"pe"],gpars=list(xlab="Year",ylab="Value",col=c("darkred","darkblue")))
+legend("topright",legend=c("gfr","pe"),col=c("darkred","darkblue"),lty=1)
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+ 
+<p style="color:red">**END YOUR ANSWER HERE**</p>
+
+
+(2b) To study the relationship between personal tax exemption (economic factor) and fertility rate, run a linear regression of `gfr` on `pe`. Interpret the coefficient before `pe`. Is it statistically significant? What's your conclusion about whether tax exemption improves fertility rate?
+
+<p style="color:red">**BEGIN YOUR ANSWER HERE**</p>
+
+```{r q2b, echo=TRUE}
+#run a OLS linear regression of "glr" on "pe"
+fit1 = lm(gfr ~ pe,data=fertil3)
+summary(fit1)
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END YOUR ANSWER HERE**</p>
+
+(2c) Now, include the time trend variable `t` into the regression model. Interpret the coefficient before `pe` and `t`. What is the change in the regression result compared to the previous one? Which model should we choose and why?
+
+
+<p style="color:red">**BEGIN YOUR ANSWER HERE**</p>
+
+```{r q2c, echo=TRUE}
+fit2 = lm(gfr ~ pe + t, data = fertil3)
+summary(fit2)
+
+```
+
+<p style="color:blue">
+Type your answer here.
+</p>
+
+<p style="color:red">**END YOUR ANSWER HERE**</p>
+
+(2d) Up to now, we have applied static model on `gfr` and `pe`. Many have argued that fertility rate might respond to the tax exemption in previous periods (pe1, pe2), `ww2` (war attrition) and `pill` (introduction of contraception techonology). Run a linear regression model with lag terms of `pe`, i.e. regress `gfr ~ pe + pe_1 + pe_2 + ww2 + pill + t`. Interpret the coefficient before `pe_1` and `ww2`. Do you think fertility rate responses to personal tax exemption in previous periods? 
+
+<p style="color:red">**BEGIN YOUR ANSWER HERE**</p>
+
+```{r q2d, echo=TRUE}
+fit3 = lm(gfr ~ pe + pe_1 + pe_2 + ww2 + pill + t, data = fertil3)
+summary(fit3)
+
+```
+<p style="color:blue"> 
+Type your answer here.
+
+<p style="color:red">**END YOUR ANSWER HERE**</p>
+
+
+(2e) Check the linear regression model in (2d) for multicollinearity. Are there any independent variables that are highly correlated or do any independent variables create issues of multicollinearity? What would you do to address the multicollinearity issues, if any? 
+
+<p style="color:red">**BEGIN YOUR ANSWER HERE**</p>
+
+```{r q2e, echo=TRUE}
+#Check correlation of the IVs
+cor_iv <- fertil3%>%select(pe,pe_1,pe_2,ww2,pill,t)
+cor(cor_iv)
+vif(fit3)
+
+#Use Stepwise regression to select best model
+ols_step_best_subset(fit3)
+
+#Remove pill from the predictors
+fit4 = lm(gfr ~ pe + pe_2 + ww2 + t, data = fertil3)
+summary(fit4)
+vif(fit4)
+
+#Remove pe_2 from the predictors
+fit5 = lm(gfr ~ pe + ww2 + t, data=fertil3)
+summary(fit5)
+vif(fit5)
+
+```
+<p style="color:blue"> 
+Correlation of t and pill to be > 0.7 hence suggesting possible multicollinearity issues.<br>
+5 variables have VIF > 3. This suggests the model has serious multicollinearity issues.
+<p style="color:red">**END YOUR ANSWER HERE**</p>
+

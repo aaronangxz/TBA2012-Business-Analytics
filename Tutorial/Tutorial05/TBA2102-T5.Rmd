@@ -60,7 +60,15 @@ Note about *working directories* in R Markdown. If you do not specify your worki
 # install.packages("dplyr") #only need to run this code once to install the package
 # load required packages 
 # library("xxxx")
-
+library(rcompanion)
+library(rstatix)
+library(Rmisc)
+library(dplyr)
+library(tidyr)
+library(rpivotTable)
+library(knitr)
+library(psych)
+library(readxl)
 ```
 
 
@@ -84,7 +92,7 @@ Note about *working directories* in R Markdown. If you do not specify your worki
 #put in your working directory folder pathname ()
 
 #import data file into RStudio
-
+ST <- read_xlsx("Sales Transactions.xlsx", skip=2)
 
 ```
 
@@ -106,10 +114,43 @@ What do each of the interval estimates above tell us? Type your answer below. In
 
 <p style="color:red">**BEGIN: YOUR ANSWER**</p>
 ```{r int.1a, echo=TRUE}
-# Enter your codes here
 #(i)
+uCIamt95 <- mean(ST$Amount) - qt(0.025,df=nrow(ST)-1) * sd(ST$Amount)/sqrt(nrow(ST))
+lCIamt95 <- mean(ST$Amount) + qt(0.025,df=nrow(ST)-1) * sd(ST$Amount)/sqrt(nrow(ST))
+print(cbind(lCIamt95,uCIamt95),digits=4)
 
+#(ii)
+book <- ST %>% filter(Product == "Book")
+bk50 <- book %>% filter(Amount > 50)
+pbk50 <- nrow(bk50) / nrow(book)
+lCIpbk50 <- pbk50 + (qnorm(0.005)*sqrt(pbk50*(1-pbk50)/nrow(book)))
+uCIpbk50 <- pbk50 - (qnorm(0.005)*sqrt(pbk50*(1-pbk50)/nrow(book)))
+print(cbind(lCIpbk50,uCIpbk50),digits=3)
 
+#(iii)
+dvd <- ST %>% filter(Product   == "DVD")
+#check normality
+plot(density(dvd$Amount),main = "Density plot for `Amount` for DVD orders")
+qqnorm(dvd$Amount,ylab="Sample Quantiles for `Amount` for DVD orders")
+qqline(dvd$Amount,col="red")
+shapiro.test(dvd$Amount)
+
+#transform data to normal distribution using transformTukey
+dvd$Amt.t = transformTukey(dvd$Amount, plotit=TRUE)
+#output lambda = 0.6, using x^lambda where lambda = 0.6
+mnamt.t <- mean(dvd$Amt.t)
+sdamt.t <- sd(dvd$Amt.t)
+lPI.amtt <- mnamt.t + (qt(0.05,df=(nrow(dvd)-1))*sdamt.t * sqrt(1+1/nrow(dvd)))
+uPI.amtt <- mnamt.t - (qt(0.05,df=(nrow(dvd)-1))*sdamt.t * sqrt(1+1/nrow(dvd)))
+cbind(lPI.amtt,uPI.amtt)
+
+#reverse transform
+#y = x^lambda = x^0.6
+#x = y^(1/0.6)
+lPI.amt <- lPI.amtt^(1/0.6)
+uPI.amt <- uPI.amtt^(1/0.6)
+
+cbind(lPI.amt,uPI.amt) #reverse transform
 ```
 
 <p style="color:blue">
@@ -130,16 +171,50 @@ Type your answer here.
 
 <p style="color:red">**BEGIN: YOUR ANSWER**</p>
 ```{r hyp.1b, echo=TRUE}
+#(i)
+#Compute z-statistics for proportion
+z <- (pbk50 - 0.10) / sqrt(0.1*(1-0.1)/nrow(book))
+z
 
-# Enter your codes here
+#Compute critical value
+cv95 <- qnorm(0.05)
+cv95
 
+z < cv95
+
+#(ii)
+t.test(ST$Amount ~ ST$Product)
+
+#(iii)
+#Check if ANOVA assumptions are met, check normality, plot histogram
+par(mfcol=c(2,2))
+E <- ST %>% filter(Region == "East")
+W <- ST %>% filter(Region == "West")
+N <- ST %>% filter(Region == "North")
+S <- ST %>% filter(Region == "South")
+
+hist(E$Amount, main = "Histogram for `East`", xlab = "Amount")
+hist(W$Amount, main = "Histogram for `west`", xlab = "Amount")
+hist(N$Amount, main = "Histogram for `North`", xlab = "Amount")
+hist(S$Amount, main = "Histogram for `South`", xlab = "Amount")
+
+#check sample sizes across regions
+table(ST$Region)
+#check equal variance assumption
+fligner.test(Amount ~ Region,ST)
+#Conduct ANOVA
+aov.amt <- aov(ST$Amount ~ as.factor((ST$Region)))
+summary(aov.amt)
+TukeyHSD(aov.amt)
 ```
 
 <p style="color:blue">
 
 Type your answer here.
 </p>
- 
+Null: P(Amount > 50) >= 0.1<br>
+Alt: P(Amount > 50) < 0.1<br>
+Left one-sided hypothesis test
 </p>
 
 

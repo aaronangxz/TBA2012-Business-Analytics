@@ -81,7 +81,7 @@ Do check the data for missing values.
 
 ```{r q1-read-dataset, echo=TRUE}
 #put in your working directory folder pathname 
-
+dta_wb <- read.csv("Tutorial6_WorldBankData.csv")
 #import data file into RStudio
 
 ```
@@ -96,12 +96,13 @@ In the following questions, let's try to explore what are some of the possible v
 
 <p style="color:red">**BEGIN: YOUR ANSWER**</p>
 ```{r q1a, echo=TRUE}
-# Enter your codes here
-
+plot(dta_wb$GDP.per.capita.PPP,dta_wb$Human.Capital.Index)
 ```
 
 <p style="color:blue">
-Type your answer here.
+GDP per capita seems related to Human Capital Index. <br>
+Countries with higher GDP per capita also tend to have higher Human Capital Index.<br>
+Non-linear relationship.
 </p>
 
 <p style="color:red">**END: YOUR ANSWER**</p>
@@ -111,12 +112,12 @@ Type your answer here.
 
 <p style="color:red">**BEGIN: YOUR ANSWER**</p>
 ```{r q1b, echo=TRUE}
-# Enter your codes here
+dta_wb$logGDP = log10(dta_wb$GDP.per.capita.PPP)
 
 ```
 
 <p style="color:blue">
-Type your answer here.
+
 </p>
 
 <p style="color:red">**END: YOUR ANSWER**</p>
@@ -126,13 +127,22 @@ Type your answer here.
 <p style="color:red">**BEGIN: YOUR ANSWER**</p>
 
 ```{r q1c, echo=TRUE}
-# Enter your codes here
+summary(lm(Human.Capital.Index ~ logGDP,dta_wb))
 
-
+nrow(dta_wb)
 ```
 
 <p style="color:blue">
-Type your answer here.
+The intercept (b0) is -0.43. This shows when a country had logGDP = 0 the average Human Capital Index is -0.43.<br>
+The slope (b1) is 0.246. When the log10-GDP of a country increases by 1 unit, we expect to see an average increase of Human Capital Index by 0.246.<br>
+t-value is very large, and the p-value is less than 0.5<br>
+We can reject the null hypothesis that this slope B1 = 0, i.e. B1 is statically significantly different from zero.<br>
+<br>
+There are a total of 258 countries. Summary shows 101 observ were deleted due to missingness leaving only 157 countries used in the regression analysis.<br>
+<br>
+R-Square is 0.746, which means that this model explains almost 75% of the total variation of `Human.Capital.Index`.<br>
+F-test's p-values is significant implies "at least one of Bs is not zero".<br>
+Given only one predictor -> B1 is statistically not zero.
 </p>
 
 <p style="color:red">**END: YOUR ANSWER**</p>
@@ -146,7 +156,9 @@ Now let's consider at another set of variables in the same dataset: `Health.Expe
 <p style="color:red">**BEGIN: YOUR ANSWER**</p>
 
 <p style="color:blue">
-Type your answer here.
+Life.Expectancy.at.birth = b0 + b1 Health.Expenditure.per.capita + b2 Diabetes.Prevalencebr>
+<br>
+Value of life expectancy, manipulatibility of Health.Expenditure.per.capita
 </p>
 
 <p style="color:red">**END: YOUR ANSWER**</p>
@@ -156,8 +168,12 @@ Type your answer here.
 <p style="color:red">**BEGIN: YOUR ANSWER**</p>
 ```{r q2b, echo=TRUE}
 
-# Enter your codes here
-
+#log transform Health.Expenditure.per.capita
+dta_wb$logHealthExpenditure <- log10(dta_wb$Health.Expenditure.per.capita)
+plot(dta_wb$logHealthExpenditure, dta_wb$Diabetes.Prevalence)
+abline(lm(Diabetes.Prevalence ~ logHealthExpenditure,data = dta_wb))
+plot(dta_wb$logHealthExpenditure,dta_wb$Life.Expectancy.at.birth)
+plot(dta_wb$Diabetes.Prevalence,dta_wb$Life.Expectancy.at.birth)
 ```
 
 <p style="color:blue">
@@ -171,7 +187,8 @@ Type your answer here.
 
 <p style="color:red">**BEGIN: YOUR ANSWER**</p>
 ```{r q2c, echo=TRUE}
-# Enter your codes here
+fit2 <- lm(Life.Expectancy.at.birth ~ log10(Health.Expenditure.per.capita)+Diabetes.Prevalence, data = dta_wb)
+summary(fit2)
 
 ```
 
@@ -192,8 +209,8 @@ Sidenote: The answer to this question comes up very often in practice, and is ea
 
 <p style="color:red">**BEGIN: YOUR ANSWER**</p>
 ```{r q3a, echo=TRUE}
-# Enter your codes here
-
+summary(dta_wb$Tertiary.Education.Expenditure.per.student)
+sum(!is.na(dta_wb$Tertiary.Education.Expenditure.per.student))
 ```
 
 <p style="color:blue">
@@ -207,7 +224,13 @@ Type your answer here.
 <p style="color:red">**BEGIN: YOUR ANSWER**</p>
 
 ```{r q3b, echo=TRUE}
-# Enter your codes here
+
+dta_wb$logPopulation = log10(dta_wb$Population)
+plot(x=dta_wb$Population, y = dta_wb$Human.Capital.Index)
+plot(x=dta_wb$logPopulation, y = dta_wb$Human.Capital.Index)
+
+fit3 <- lm(Human.Capital.Index ~ logPopulation,dta_wb)
+summary(fit3)
 
 ```
 
@@ -225,7 +248,9 @@ Next, run a generalized linear model to predict whether a country will be above 
 <p style="color:red">**BEGIN: YOUR ANSWER**</p>
 
 ```{r q3c, echo=TRUE}
-# Enter your codes here
+dta_wb$HCI.aboveMedian <- (dta_wb$Human.Capital.Index >= median(dta_wb$Human.Capital.Index,na.rm=TRUE))
+
+summary(glm(HCI.aboveMedian ~ log10(GDP.per.capita.PPP) + log10(Health.Expenditure.per.capita) + Life.Expectancy.at.birth + Diabetes.Prevalence, dta_wb, family = "binomial"))
 
 ```
 <p style="color:blue">
